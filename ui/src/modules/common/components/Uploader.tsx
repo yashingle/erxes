@@ -1,42 +1,15 @@
-import { __, Alert, confirm, uploadHandler } from 'modules/common/utils';
+import { __, Alert, uploadHandler } from 'modules/common/utils';
 import React from 'react';
 import styled from 'styled-components';
 import { rgba } from '../styles/color';
 import colors from '../styles/colors';
 import { IAttachment } from '../types';
-import Attachment from './Attachment';
+import AttachmentsGallery from './AttachmentsGallery';
+
 import Spinner from './Spinner';
 
-const List = styled.div`
+const LoadingContainer = styled.div`
   margin: 10px 0;
-`;
-
-const Item = styled.div`
-  margin-bottom: 10px;
-`;
-
-const Delete = styled.span`
-  text-decoration: underline;
-  transition: all 0.3s ease;
-  color: ${colors.colorCoreGray};
-
-  &:hover {
-    color: ${colors.colorCoreBlack};
-    cursor: pointer;
-  }
-`;
-
-const ToggleButton = styled(Delete.withComponent('div'))`
-  padding: 7px 15px;
-  border-radius: 4px;
-  margin-bottom: 15px;
-
-  &:hover {
-    background: ${rgba(colors.colorCoreDarkBlue, 0.07)};
-  }
-`;
-
-const LoadingContainer = styled(List)`
   background: ${colors.bgActive};
   border-radius: 4px;
   display: flex;
@@ -83,7 +56,6 @@ type Props = {
 type State = {
   attachments: IAttachment[];
   loading: boolean;
-  hideOthers: boolean;
 };
 
 class Uploader extends React.Component<Props, State> {
@@ -97,8 +69,7 @@ class Uploader extends React.Component<Props, State> {
 
     this.state = {
       attachments: props.defaultFileList || [],
-      loading: false,
-      hideOthers: true
+      loading: false
     };
   }
 
@@ -127,40 +98,16 @@ class Uploader extends React.Component<Props, State> {
 
         const attachments = [attachment, ...this.state.attachments];
 
-        this.props.onChange(attachments);
-
         this.setState({
           loading: false,
           attachments
+        }, () => {
+          this.props.onChange(attachments);
         });
       }
     });
 
     target.value = '';
-  };
-
-  removeAttachment = (index: number) => {
-    const attachments = [...this.state.attachments];
-
-    attachments.splice(index, 1);
-
-    this.setState({ attachments });
-
-    this.props.onChange(attachments);
-  };
-
-  renderItem = (item: IAttachment, index: number) => {
-    const removeAttachment = () => {
-      confirm().then(() => this.removeAttachment(index));
-    };
-
-    const remove = <Delete onClick={removeAttachment}>{__('Delete')}</Delete>;
-
-    return (
-      <Item key={item.url}>
-        <Attachment attachment={item} additionalItem={remove} />
-      </Item>
-    );
   };
 
   renderUploadButton() {
@@ -184,31 +131,9 @@ class Uploader extends React.Component<Props, State> {
     );
   }
 
-  toggleAttachments = () => {
-    this.setState({ hideOthers: !this.state.hideOthers });
-  };
-
-  renderToggleButton = (hiddenCount: number) => {
-    if (hiddenCount > 0) {
-      const buttonText = this.state.hideOthers
-        ? `${__('View all attachments')} (${hiddenCount} ${__('hidden')})`
-        : `${__('Show fewer attachments')}`;
-
-      return (
-        <ToggleButton onClick={this.toggleAttachments}>
-          {buttonText}
-        </ToggleButton>
-      );
-    }
-
-    return null;
-  };
-
   render() {
-    const { limit = 4 } = this.props;
-    const { attachments, hideOthers, loading } = this.state;
-
-    const length = attachments.length;
+    const { limit = 4, onChange } = this.props;
+    const { attachments, loading } = this.state;
 
     return (
       <>
@@ -218,12 +143,7 @@ class Uploader extends React.Component<Props, State> {
             {__('Uploading')}...
           </LoadingContainer>
         )}
-        <List>
-          {this.state.attachments
-            .slice(0, limit && hideOthers ? limit : length)
-            .map((item, index) => this.renderItem(item, index))}
-        </List>
-        {this.renderToggleButton(length - limit)}
+        <AttachmentsGallery attachments={attachments} limit={limit} onChange={onChange} />
         {this.renderUploadButton()}
       </>
     );

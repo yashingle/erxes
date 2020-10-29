@@ -1,7 +1,7 @@
-import { darken, rgba } from 'modules/common/styles/color';
-import styled from 'styled-components';
-import styledTS from 'styled-components-ts';
-import { colors, dimensions } from '../../styles';
+import { darken, rgba } from "modules/common/styles/color";
+import styled from "styled-components";
+import styledTS from "styled-components-ts";
+import { colors, dimensions } from "../../styles";
 
 const Container = styled.div`
   display: flex;
@@ -10,50 +10,56 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   padding: ${dimensions.coreSpacing}px ${dimensions.coreSpacing * 2}px;
-	background: ${colors.bgLight};
-	flex-direction: column;
+  background: ${colors.bgLight};
+  flex-direction: column;
 
-	h2 {
-		margin: 0px 0 ${dimensions.unitSpacing}px;
-		font-weight: 700;
-		text-align: center;
-	}
+  h2 {
+    margin: 0px 0 ${dimensions.unitSpacing}px;
+    font-weight: 700;
+    text-align: center;
+  }
 
-	> p {
-		font-size: 16px;
-		text-align: center;
-		color: ${colors.colorCoreGray};
-		max-width: 65%;
+  > p {
+    font-size: 16px;
+    text-align: center;
+    color: ${colors.colorCoreGray};
+    max-width: 65%;
 
-		@media (max-width: 1170px) {
-			max-width: 100%;
-		}
-	}
+    @media (max-width: 1170px) {
+      max-width: 100%;
+    }
+  }
 `;
 
 const Items = styledTS<{ vertical?: boolean }>(styled.div)`
 	display: flex;
 	flex-wrap: wrap;
-	flex-direction: ${props => props.vertical ? 'column' : 'row'};
+	flex-direction: ${(props) => (props.vertical ? "column" : "row")};
 `;
 
 const Action = styled.div`
-	margin-top: auto;
+  margin-top: auto;
 
-	button, a {
-		&:active, &:focus {
-			box-shadow: none;
-		}
-	}
+  button,
+  a {
+    &:active,
+    &:focus {
+      box-shadow: none;
+    }
+  }
 `;
 
-const ItemContent = styledTS<{ color: string, vertical?: boolean; max?:string }>(styled.div)`
-	background: ${props => rgba(props.color, 0.2)};
+const ItemContent = styledTS<{
+  color: string;
+  vertical?: boolean;
+  max?: string;
+}>(styled.div)`
+	background: ${(props) => rgba(props.color, 0.2)};
 	padding: 25px 30px;
 	border-radius: 5px;
 	margin: 10px;
 	min-width: 240px;
-	max-width: ${props => props.vertical ? '420px' : props.max};
+	max-width: ${(props) => (props.vertical ? "420px" : props.max)};
 	flex: 1;
 	display: flex;
 	flex-direction: column;
@@ -70,10 +76,10 @@ const ItemContent = styledTS<{ color: string, vertical?: boolean; max?:string }>
 	}
 
 	${Action} > button, ${Action} > a {
-		background: ${props => props.color};
+		background: ${(props) => props.color};
 		
 		&:hover {
-			background: ${props => darken(props.color, 15)};
+			background: ${(props) => darken(props.color, 15)};
 		}
 	}
 
@@ -111,10 +117,9 @@ const ItemContent = styledTS<{ color: string, vertical?: boolean; max?:string }>
 	}
 
 	&:hover {
-		background: ${props => rgba(props.color, 0.3)};
-		border-color: ${props => props.color};
+		background: ${(props) => rgba(props.color, 0.3)};
+		border-color: ${(props) => props.color};
 	}
 `;
 
 export { Container, Items, Action, ItemContent };
-
