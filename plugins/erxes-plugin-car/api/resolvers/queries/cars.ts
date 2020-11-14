@@ -1,5 +1,3 @@
-import { getCar } from "../utils";
-
 const generateFilter = async (models, params, commonQuerySelector) => {
   const filter: any = commonQuerySelector;
 
@@ -80,7 +78,7 @@ const carQueries = [
     name: 'carDetail',
     handler: async (_root, { _id }, { models, checkPermission, user }) => {
       await checkPermission('showCars', user);
-      return getCar(models, _id);
+      return models.Cars.getCar(models, _id);
     }
   },
 

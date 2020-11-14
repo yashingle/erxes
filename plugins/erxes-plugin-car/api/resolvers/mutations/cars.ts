@@ -1,11 +1,9 @@
-import { createCar, createCarCategory, getCar, getCarCatogery, mergeCars, removeCars, updateCar, updateCarCategory } from "../utils";
-
 const carMutations = [
   {
     name: 'carsAdd',
     handler: async (_root, doc, { user, docModifier, models, checkPermission }) => {
       await checkPermission('manageCars', user);
-      const car = createCar(models, docModifier(doc), user)
+      const car = models.Cars.createCar(models, docModifier(doc), user)
 
       // await putCreateLog(
       //   {
@@ -26,8 +24,8 @@ const carMutations = [
     name: 'carsEdit',
     handler: async (_root, { _id, ...doc }, { models, checkPermission, user }) => {
       await checkPermission('manageCars', user);
-      await getCar(models, _id);
-      const updated = await updateCar(models, _id, doc);
+      await models.Cars.getCar(models, _id);
+      const updated = await models.Cars.updateCar(models, _id, doc);
 
       // await putUpdateLog(
       //   {
@@ -52,7 +50,7 @@ const carMutations = [
       await checkPermission('manageCars', user);
       await models.Cars.find({ _id: { $in: carIds } }).lean();
 
-      await removeCars(models, carIds);
+      await models.Cars.removeCars(models, carIds);
 
       // for (const car of cars) {
       //   await putDeleteLog({ type: MODULE_NAMES.COMPANY, object: car }, user);
@@ -69,7 +67,7 @@ const carMutations = [
     name: 'carsMerge',
     handler: async (_root, { carIds, carFields }, { models, checkPermission, user }) => {
       await checkPermission('manageCars', user);
-      return mergeCars(models, carIds, carFields);
+      return models.Cars.mergeCars(models, carIds, carFields);
     }
   },
 
@@ -81,7 +79,7 @@ const carMutations = [
     name: 'carCategoriesAdd',
     handler: async (_root, doc, { docModifier, models, checkPermission, user }) => {
       await checkPermission('manageCars', user);
-      const carCategory = await createCarCategory(models, docModifier(doc));
+      const carCategory = await models.Cars.createCarCategory(models, docModifier(doc));
 
       // await putCreateLog(
       //   {
@@ -106,7 +104,7 @@ const carMutations = [
     handler: async (_root, { _id, ...doc }, { models, checkPermission, user }) => {
       await checkPermission('manageCars', user);
       // const carCategory = await getCarCatogery(models, { _id });
-      const updated = await updateCarCategory(models, _id, doc);
+      const updated = await models.Cars.updateCarCategory(models, _id, doc);
 
       // await putUpdateLog(
       //   {
@@ -130,8 +128,8 @@ const carMutations = [
     name: 'carCategoriesRemove',
     handler: async (_root, { _id }: { _id: string }, { models, checkPermission, user }) => {
       await checkPermission('manageCars', user);
-      await getCarCatogery(models, { _id });
-      const removed = await createCarCategory(models, _id);
+      await models.Cars.getCarCatogery(models, { _id });
+      const removed = await models.Cars.createCarCategory(models, _id);
 
       // await putDeleteLog({ type: MODULE_NAMES.CAR_CATEGORY, object: carCategory }, user);
 
