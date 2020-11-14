@@ -147,6 +147,10 @@ export const extendViaPlugins = (app, resolvers, typeDefDetails): Promise<any> =
 
     if (models.length) {
       models.forEach(model => {
+        if (model.klass) {
+          model.schema = new mongoose.Schema(model.schema).loadClass(model.klass);
+        }
+
         allModels[model.name] = mongoose.model(model.name.replace(/([a-z])([A-Z])/g, "$1_$2").toLowerCase(), model.schema);
       });
     }

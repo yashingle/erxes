@@ -8,13 +8,6 @@ const sendSuccess = (data) => ({
   data,
 });
 
-const checkModels = async (models, collection, handler, param) => {
-  if (!Object.keys(models).includes(collection)) {
-    throw new Error(`not found ${collection} models`);
-  }
-  return models[collection][handler](param);
-};
-
 export default [
   {
     method: "RPCQueue",
@@ -25,10 +18,6 @@ export default [
       let filter = {};
       let car: any = null;
       let dealIdsOfCustomer = [];
-
-      if (!customer || !car) {
-        return;
-      }
 
       try {
         switch (action) {
@@ -41,8 +30,7 @@ export default [
             if (!customer) {
               return sendError("User has not customer");
             }
-
-            const loyalty = await models.Loyalties.getLoyaltyValue(customer);
+            const loyalty = await models.Loyalties.getLoyaltyValue(models, customer);
 
             filter = {};
             dealIdsOfCustomer = await models.Conformities.savedConformity({
@@ -74,10 +62,7 @@ export default [
 
           case "createCar":
             try {
-              car = await checkModels(models, models.Cars, "createCar", {
-                ...data,
-              });
-              // car = await models.Cars.createCar({ ...data });
+              car = await models.Cars.createCar(models, { ...data });
               customer = await models.Customers.getWidgetCustomer({
                 email: data.user.email,
                 phone: data.user.phoneNumber,
@@ -532,11 +517,11 @@ export default [
 
         case "updateCar":
           return sendSuccess(
-            await models.Cars.updateCar(data._id, { ...data })
+            await models.Cars.updateCar(models, data._id, { ...data })
           );
 
         case "removeCars":
-          return sendSuccess(await models.Cars.removeCars(data.carIds));
+          return sendSuccess(await models.Cars.removeCars(models, data.carIds));
 
         case "addLoyalty":
           customer = await models.Customers.getWidgetCustomer({
@@ -553,7 +538,7 @@ export default [
               },
             });
           }
-          await models.Loyalties.addLoyalty(customer, data.loyalty);
+          await models.Loyalties.addLoyalty(models, customer, data.loyalty);
       }
     },
   },
