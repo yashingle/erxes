@@ -1,5 +1,4 @@
 import { getCar } from "../utils";
-import * as badWords from 'bad-words';
 
 const generateFilter = async (models, params, commonQuerySelector) => {
   const filter: any = commonQuerySelector;
@@ -40,12 +39,12 @@ const carQueries = [
    */
   {
     name: 'cars',
-    handler: async (_root, params, { commonQuerySelector, models }) => {
+    handler: async (_root, params, { commonQuerySelector, models, checkPermission, user }) => {
+      await checkPermission('showCars', user);
       // return paginate(models.Cars.find(await generateFilter(models, params, commonQuerySelector)), {
       //   page: params.page,
       //   perPage: params.perPage
       // });
-      console.log('mmmmmmmm', badWords)
 
       return models.Cars.find(await generateFilter(models, params, commonQuerySelector));
     }
@@ -56,7 +55,8 @@ const carQueries = [
    */
   {
     name: 'carsMain',
-    handler: async (_root, params, { commonQuerySelector, models }) => {
+    handler: async (_root, params, { commonQuerySelector, models, checkPermission, user }) => {
+      await checkPermission('showCars', user);
       const filter = await generateFilter(models, params, commonQuerySelector);
 
       // return {
@@ -78,7 +78,8 @@ const carQueries = [
    */
   {
     name: 'carDetail',
-    handler: (_root, { _id }, { models }) => {
+    handler: async (_root, { _id }, { models, checkPermission, user }) => {
+      await checkPermission('showCars', user);
       return getCar(models, _id);
     }
   },
@@ -88,8 +89,9 @@ const carQueries = [
     handler: async (
       _root,
       { parentId, searchValue },
-      { commonQuerySelector, models },
+      { commonQuerySelector, models, checkPermission, user },
     ) => {
+      await checkPermission('showCars', user);
       const filter: any = commonQuerySelector;
 
       if (parentId) {
@@ -106,14 +108,16 @@ const carQueries = [
 
   {
     name: 'carCategoriesTotalCount',
-    handler: (_root, _param, { models }) => {
+    handler: async (_root, _param, { models, checkPermission, user }) => {
+      await checkPermission('showCars', user);
       return models.CarCategories.find().countDocuments();
     }
   },
 
   {
     name: 'carCategoryDetail',
-    handler: (_root, { _id }, { models }) => {
+    handler: async (_root, { _id }, { models, checkPermission, user }) => {
+      await checkPermission('showCars', user);
       return models.CarCategories.findOne({ _id });
     }
   },

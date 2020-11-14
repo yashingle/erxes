@@ -1,9 +1,11 @@
 
 export default [
-  { name: 'carsAdd', description: 'Add car' },
-  { name: 'carsEdit', description: 'Edit car' },
-  { name: 'carsRemove', description: 'Remove car' },
-  { name: 'carsMerge', description: 'Merge car' },
-  { name: 'cars', description: 'Show cars' },
-  { name: 'carsMain', description: 'Show carsMain' },
+  { name: 'showCars', description: 'Show cars' },
+  { name: 'manageCars', description: 'Manage cars' },
+  {
+    name: 'all', description: 'All', use: [
+      'showCars',
+      'manageCars',
+    ]
+  },
 ];

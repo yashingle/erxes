@@ -3,7 +3,8 @@ import { createCar, createCarCategory, getCar, getCarCatogery, mergeCars, remove
 const carMutations = [
   {
     name: 'carsAdd',
-    handler: async (_root, doc, { user, docModifier, models }) => {
+    handler: async (_root, doc, { user, docModifier, models, checkPermission }) => {
+      await checkPermission('manageCars', user);
       const car = createCar(models, docModifier(doc), user)
 
       // await putCreateLog(
@@ -23,7 +24,8 @@ const carMutations = [
    */
   {
     name: 'carsEdit',
-    handler: async (_root, { _id, ...doc }, { models }) => {
+    handler: async (_root, { _id, ...doc }, { models, checkPermission, user }) => {
+      await checkPermission('manageCars', user);
       await getCar(models, _id);
       const updated = await updateCar(models, _id, doc);
 
@@ -46,7 +48,8 @@ const carMutations = [
    */
   {
     name: 'carsRemove',
-    handler: async (_root, { carIds }: { carIds: string[] }, { models }) => {
+    handler: async (_root, { carIds }: { carIds: string[] }, { models, checkPermission, user }) => {
+      await checkPermission('manageCars', user);
       await models.Cars.find({ _id: { $in: carIds } }).lean();
 
       await removeCars(models, carIds);
@@ -64,7 +67,8 @@ const carMutations = [
    */
   {
     name: 'carsMerge',
-    handler: async (_root, { carIds, carFields }, { models }) => {
+    handler: async (_root, { carIds, carFields }, { models, checkPermission, user }) => {
+      await checkPermission('manageCars', user);
       return mergeCars(models, carIds, carFields);
     }
   },
@@ -75,7 +79,8 @@ const carMutations = [
    */
   {
     name: 'carCategoriesAdd',
-    handler: async (_root, doc, { docModifier, models }) => {
+    handler: async (_root, doc, { docModifier, models, checkPermission, user }) => {
+      await checkPermission('manageCars', user);
       const carCategory = await createCarCategory(models, docModifier(doc));
 
       // await putCreateLog(
@@ -98,7 +103,8 @@ const carMutations = [
    */
   {
     name: 'carCategoriesEdit',
-    handler: async (_root, { _id, ...doc }, { models }) => {
+    handler: async (_root, { _id, ...doc }, { models, checkPermission, user }) => {
+      await checkPermission('manageCars', user);
       // const carCategory = await getCarCatogery(models, { _id });
       const updated = await updateCarCategory(models, _id, doc);
 
@@ -122,7 +128,8 @@ const carMutations = [
    */
   {
     name: 'carCategoriesRemove',
-    handler: async (_root, { _id }: { _id: string }, { models }) => {
+    handler: async (_root, { _id }: { _id: string }, { models, checkPermission, user }) => {
+      await checkPermission('manageCars', user);
       await getCarCatogery(models, { _id });
       const removed = await createCarCategory(models, _id);
 
