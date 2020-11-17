@@ -169,7 +169,9 @@ export default withProps<Props>(
       name: 'combinedFieldsQuery',
       options: ({ contentType }) => ({
         variables: {
-          contentType: contentType === 'lead' ? 'customer' : contentType
+          contentType: ['visitor', 'lead', 'customer'].includes(contentType)
+            ? 'customer'
+            : contentType
         }
       })
     })

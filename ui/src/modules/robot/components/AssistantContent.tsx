@@ -20,11 +20,21 @@ type Props = {
 };
 
 type State = {
-  selectedFeature?: IFeature;
-  featureLimit: number;
+  welcomeStep: number;
 };
 
 class AssistantContent extends React.Component<Props, State> {
+  constructor(props) {
+    super(props);
+
+    this.state = { welcomeStep: 0 };
+  }
+
+  restartOnboard = () => {
+    this.setState({ welcomeStep: 1 });
+    this.props.changeRoute('initial');
+  };
+
   renderContent() {
     const {
       currentRoute,
@@ -32,8 +42,7 @@ class AssistantContent extends React.Component<Props, State> {
       currentUser,
       forceComplete,
       savedFeatures,
-      toggleContent,
-      showContent
+      toggleContent
     } = this.props;
 
     const commonProps = {
@@ -50,6 +59,7 @@ class AssistantContent extends React.Component<Props, State> {
       <Onboarding
         currentUserName={getCurrentUserName(currentUser)}
         changeRoute={changeRoute}
+        activeStep={this.state.welcomeStep}
       />
     );
 
@@ -58,24 +68,15 @@ class AssistantContent extends React.Component<Props, State> {
     }
 
     if (currentRoute === 'inComplete') {
-      const { onboardingHistory } = currentUser;
-
       if (!savedFeatures) {
         return onBoarding;
       }
 
-      if (
-        !showContent ||
-        (onboardingHistory && onboardingHistory.isCompleted)
-      ) {
-        return null;
-      }
-
-      return <Suggestion {...commonProps} onClick={onClick} />;
+      return <Suggestion {...commonProps} onResumeClick={onClick} />;
     }
 
     if (currentRoute === 'todoList' || currentRoute === 'todoDetail') {
-      return <Todo {...this.props} />;
+      return <Todo {...this.props} restartOnboard={this.restartOnboard} />;
     }
 
     return null;

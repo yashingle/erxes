@@ -15,7 +15,7 @@ type Props = {
   channels: IChannel[];
   renderEditForm: ({
     closeModal,
-    user,
+    user
   }: {
     closeModal: () => void;
     user: IUser;
@@ -97,7 +97,7 @@ class LeftSidebar extends React.Component<Props> {
         <Section>
           <Title>{__('Channels')}</Title>
           <List>
-            {channels.map((channel) => {
+            {channels.map(channel => {
               return (
                 <li key={channel._id}>
                   <Link to={`/settings/channels?id=${channel._id}`}>

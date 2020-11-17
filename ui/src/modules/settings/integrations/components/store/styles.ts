@@ -23,6 +23,10 @@ const IntegrationRow = styled.div`
   display: flex;
   flex-wrap: wrap;
   background: ${colors.colorWhite};
+
+  &:last-of-type {
+    margin-bottom: 20px;
+  }
 `;
 
 const Box = styledTS<{ isInMessenger: boolean }>(styled.div)`
@@ -172,10 +176,10 @@ const IntegrationItem = styled.div`
 
 const CollapsibleContent = styled.div`
   margin: ${dimensions.coreSpacing}px 0 0 ${dimensions.coreSpacing}px;
-  padding: 10px 0 20px 10px;
+  padding: 10px 40px 20px 10px;
   background: ${collapsibleBackground};
-  box-shadow: inset 0px 11px 5px -10px ${colors.colorShadowGray},
-    inset 0px -11px 5px -10px ${colors.colorShadowGray};
+  box-shadow: inset 10px 11px 5px -10px ${colors.colorShadowGray},
+    inset 11px -11px 5px -10px ${colors.colorShadowGray};
 
   img {
     width: 300px;
@@ -190,6 +194,10 @@ const CollapsibleContent = styled.div`
 
   table td {
     background: none;
+  }
+
+  &:last-of-type {
+    margin-bottom: 20px;
   }
 `;
 

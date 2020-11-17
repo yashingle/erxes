@@ -14,6 +14,7 @@ import {
   Greeting,
   NavButton,
   ProgressText,
+  RestartButton,
   SubHeader
 } from './styles';
 
@@ -24,6 +25,7 @@ type Props = {
   currentUser: IUser;
   showContent: boolean;
   toggleContent: (isShow: boolean) => void;
+  restartOnboard: () => void;
 };
 
 type State = {
@@ -57,7 +59,7 @@ class Todo extends React.Component<Props, State> {
           </NavButton>
         )}
 
-        <NavButton onClick={onHide} right={true}>
+        <NavButton id="robot-feature-close" onClick={onHide} right={true}>
           <Icon icon="times" size={17} />
         </NavButton>
         {content}
@@ -148,7 +150,12 @@ class Todo extends React.Component<Props, State> {
 
   renderContent() {
     const { selectedFeature } = this.state;
-    const { availableFeatures, currentRoute, currentUser } = this.props;
+    const {
+      availableFeatures,
+      currentRoute,
+      currentUser,
+      restartOnboard
+    } = this.props;
 
     if (currentRoute === 'todoDetail') {
       return this.withHeader(
@@ -180,6 +187,10 @@ class Todo extends React.Component<Props, State> {
           {availableFeatures
             .filter(feature => !feature.isComplete)
             .map(availabeFeature => this.renderFeature(availabeFeature))}
+
+          <RestartButton onClick={restartOnboard}>
+            {__('Reselect features')}
+          </RestartButton>
 
           {this.renderCompleted()}
         </>

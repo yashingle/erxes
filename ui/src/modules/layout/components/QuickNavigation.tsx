@@ -7,7 +7,7 @@ import NameCard from 'modules/common/components/nameCard/NameCard';
 import Tip from 'modules/common/components/Tip';
 import { colors } from 'modules/common/styles';
 import { lighten, rgba } from 'modules/common/styles/color';
-import { __ } from 'modules/common/utils';
+import { __, can } from 'modules/common/utils';
 import Widget from 'modules/notifications/containers/Widget';
 import NotificationSettings from 'modules/settings/profile/containers/NotificationSettings';
 import React from 'react';
@@ -17,8 +17,11 @@ import styled from 'styled-components';
 import { UserHelper } from '../styles';
 import BrandChooser from './BrandChooser';
 
-const Signature = asyncComponent(() =>
-  import(/* webpackChunkName:"Signature" */ 'modules/settings/email/containers/Signature')
+const Signature = asyncComponent(
+  () =>
+    import(
+      /* webpackChunkName:"Signature" */ 'modules/settings/email/containers/Signature'
+    )
 );
 
 const UserInfo = styled.div`
@@ -56,6 +59,7 @@ const Square = styled(NavItem)`
   padding: 0;
   background: ${rgba(colors.colorSecondary, 0.1)};
   transition: background 0.3s ease;
+  border-left: 1px solid #fff;
 
   &:hover {
     background: ${rgba(colors.colorSecondary, 0.18)};
@@ -84,6 +88,10 @@ const Round = styled(NavItem)`
     &:hover {
       background: ${lighten(colors.colorPrimary, 15)};
     }
+  }
+
+  @media (max-width: 768px) {
+    display: none;
   }
 `;
 
@@ -128,8 +136,18 @@ const QuickNavigation = ({
   }
 
   return (
-    <nav>
+    <nav id={'SettingsNav'}>
       {brandsCombo}
+
+      {can('showCalendars', currentUser) && (
+        <Tip text={__('Calendar')} placement="bottom">
+          <Square>
+            <Link to="/calendar">
+              <Icon icon="calendar-alt" size={19} />
+            </Link>
+          </Square>
+        </Tip>
+      )}
 
       <Tip text={__('Task')} placement="bottom">
         <Square>
@@ -148,7 +166,7 @@ const QuickNavigation = ({
         <Widget />
       </NavItem>
       <NavItem>
-        <Link to="/settings">
+        <Link id="Settings" to="/settings">
           <Icon icon="cog" size={20} />
         </Link>
       </NavItem>

@@ -22,6 +22,7 @@ type Props = {
   toggleBulk: (integration: ILeadIntegration, checked: boolean) => void;
   remove: (integrationId: string) => void;
   archive: (integrationId: string, status: boolean) => void;
+  showCode?: boolean;
 };
 
 class Row extends React.Component<Props> {
@@ -52,10 +53,12 @@ class Row extends React.Component<Props> {
 
     return (
       <ModalTrigger
-        title="Install code"
+        title={`Install code of ${integration.name}`}
         size="lg"
         trigger={trigger}
         content={content}
+        isOpen={this.props.showCode}
+        isAnimate={true}
       />
     );
   }
@@ -104,7 +107,12 @@ class Row extends React.Component<Props> {
     return (
       <WithPermission action="integrationsRemove">
         <Tip text={__('Delete')} placement="top">
-          <Button btnStyle="link" onClick={onClick} icon="times-circle" />
+          <Button
+            id="integrationDelete"
+            btnStyle="link"
+            onClick={onClick}
+            icon="times-circle"
+          />
         </Tip>
       </WithPermission>
     );
