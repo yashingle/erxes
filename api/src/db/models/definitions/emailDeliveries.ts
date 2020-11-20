@@ -1,5 +1,5 @@
+import { EMAIL_DELIVERY_STATUS } from 'erxes-api-utils';
 import { Document, Schema } from 'mongoose';
-import { EMAIL_DELIVERY_STATUS } from 'erxes-api-utils'
 import { field } from './utils';
 
 interface IAttachmentParams {
