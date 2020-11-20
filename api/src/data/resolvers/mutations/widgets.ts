@@ -1,4 +1,4 @@
-import { debugBase, graphqlPubsub, inmemoryStorage } from 'erxes-api-utils';
+import { graphqlPubsub, inmemoryStorage } from 'erxes-api-utils';
 import * as strip from 'strip';
 
 import {
@@ -32,6 +32,7 @@ import {
   IKnowledgebaseCredentials,
   ILeadCredentials
 } from '../../../db/models/definitions/messengerApps';
+import { debugBase } from '../../../debuggers';
 import { trackViewPageEvent } from '../../../events';
 import { AUTO_BOT_MESSAGES, BOT_MESSAGE_TYPES } from '../../constants';
 import {

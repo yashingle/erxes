@@ -1,6 +1,7 @@
 import * as AWS from 'aws-sdk';
 import utils from 'erxes-api-utils';
 import * as fileType from 'file-type';
+import * as admin from 'firebase-admin';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as strip from 'strip';
@@ -18,12 +19,27 @@ import { IBrandDocument } from '../db/models/definitions/brands';
 import { ICustomer } from '../db/models/definitions/customers';
 import { IUser, IUserDocument } from '../db/models/definitions/users';
 import { OnboardingHistories } from '../db/models/Robot';
+import { debugBase } from '../debuggers';
 import { fieldsCombinedByContentType } from './modules/fields/utils';
 
 export const uploadsFolderPath = path.join(__dirname, '../private/uploads');
 
 export const initFirebase = (code: string): void => {
-  utils.initFirebase(code)
+  if (code.length === 0) {
+    return;
+  }
+
+  const codeString = code.trim();
+
+  if (codeString[0] === "{" && codeString[codeString.length - 1] === "}") {
+    const serviceAccount = JSON.parse(codeString);
+
+    if (serviceAccount.private_key) {
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+      });
+    }
+  }
 };
 
 const models = {
@@ -679,7 +695,7 @@ export const registerOnboardHistory = ({
         });
       }
     })
-    .catch(e => utils.debugBase(e));
+    .catch(e => debugBase(e));
 
 export const authCookieOptions = (secure: boolean) => {
   const oneDay = 1 * 24 * 3600 * 1000; // 1 day

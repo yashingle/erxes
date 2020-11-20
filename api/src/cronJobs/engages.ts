@@ -1,7 +1,7 @@
-import { debugCrons } from 'erxes-api-utils';
 import * as schedule from 'node-schedule';
 import { send } from '../data/resolvers/mutations/engageUtils';
 import { EngageMessages } from '../db/models';
+import { debugCrons } from '../debuggers';
 
 const findMessages = (selector = {}) => {
   return EngageMessages.find({

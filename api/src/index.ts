@@ -2,9 +2,6 @@ import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import * as dotenv from 'dotenv';
 import {
-  debugBase,
-  debugExternalApi,
-  debugInit,
   frontendEnv,
   getEnv,
   initMemoryStorage
@@ -37,6 +34,7 @@ import {
 import { connect, mongoStatus } from './db/connection';
 import { Users } from './db/models';
 import initWatchers from './db/watchers';
+import { debugBase, debugExternalApi, debugInit } from './debuggers';
 import {
   identifyCustomer,
   trackCustomEvent,

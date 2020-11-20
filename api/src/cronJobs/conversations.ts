@@ -1,4 +1,3 @@
-import { debugCrons } from 'erxes-api-utils';
 import * as moment from 'moment';
 import * as schedule from 'node-schedule';
 import * as _ from 'underscore';
@@ -12,6 +11,7 @@ import {
   Users
 } from '../db/models';
 import { IMessageDocument } from '../db/models/definitions/conversationMessages';
+import { debugCrons } from '../debuggers';
 
 /**
  * Send conversation messages to customer

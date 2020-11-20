@@ -1,4 +1,3 @@
-import { debugExternalApi } from 'erxes-api-utils';
 import * as formidable from 'formidable';
 import * as request from 'request';
 import * as _ from 'underscore';
@@ -15,6 +14,7 @@ import {
   uploadFileAWS,
   uploadFileLocal
 } from '../data/utils';
+import { debugExternalApi } from '../debuggers';
 import messageBroker from '../messageBroker';
 
 export const importer = async (req: any, res, next) => {

@@ -1,6 +1,5 @@
 import * as csv from 'csvtojson';
 import * as dotenv from 'dotenv';
-import { debugImport, debugWorkers } from 'erxes-api-utils'
 import * as fs from 'fs';
 import * as mongoose from 'mongoose';
 import * as os from 'os';
@@ -11,6 +10,7 @@ import { deleteFile, s3Stream, uploadsFolderPath } from '../data/utils';
 import { ImportHistory } from '../db/models';
 import { CUSTOMER_SELECT_OPTIONS } from '../db/models/definitions/constants';
 import ImportHistories from '../db/models/ImportHistory';
+import { debugImport, debugWorkers } from '../debuggers';
 
 const { MONGO_URL = '' } = process.env;
 

@@ -1,9 +1,9 @@
-import { debugBase } from 'erxes-api-utils';
 import * as _ from 'underscore';
 import { Brands, Conformities, Segments, Tags } from '../../../db/models';
 import { companySchema } from '../../../db/models/definitions/companies';
 import { KIND_CHOICES } from '../../../db/models/definitions/constants';
 import { customerSchema } from '../../../db/models/definitions/customers';
+import { debugBase } from '../../../debuggers';
 import { fetchElk } from '../../../elasticsearch';
 import { COC_LEAD_STATUS_TYPES } from '../../constants';
 import { fetchBySegments } from '../segments/queryBuilder';

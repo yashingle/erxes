@@ -1,4 +1,4 @@
-import { debugExternalApi, graphqlPubsub } from 'erxes-api-utils';
+import { graphqlPubsub } from 'erxes-api-utils';
 import * as strip from 'strip';
 import * as _ from 'underscore';
 import {
@@ -18,6 +18,7 @@ import {
 import { IMessageDocument } from '../../../db/models/definitions/conversationMessages';
 import { IConversationDocument } from '../../../db/models/definitions/conversations';
 import { IUserDocument } from '../../../db/models/definitions/users';
+import { debugExternalApi } from '../../../debuggers';
 import messageBroker from '../../../messageBroker';
 import { AUTO_BOT_MESSAGES } from '../../constants';
 import { checkPermission, requireLogin } from '../../permissions/wrappers';

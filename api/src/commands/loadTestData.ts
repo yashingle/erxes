@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import { debugWorkers, initMemoryStorage, inmemoryStorage } from 'erxes-api-utils';
+import { initMemoryStorage, inmemoryStorage } from 'erxes-api-utils';
 import * as faker from 'faker';
 import * as fs from 'fs';
 import { disconnect } from 'mongoose';
@@ -47,6 +47,7 @@ import {
   MESSAGE_TYPES,
   TAG_TYPES
 } from '../db/models/definitions/constants';
+import { debugWorkers } from '../debuggers';
 import {
   clearEmptyValues,
   generatePronoun,

@@ -1,7 +1,8 @@
 import * as dotenv from 'dotenv';
-import { debugCrons, initMemoryStorage } from 'erxes-api-utils';
+import { initMemoryStorage } from 'erxes-api-utils';
 import * as express from 'express';
 import { connect } from '../db/connection';
+import { debugCrons } from '../debuggers';
 import { initBroker } from '../messageBroker';
 import './activityLogs';
 import './conversations';

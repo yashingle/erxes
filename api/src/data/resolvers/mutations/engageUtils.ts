@@ -1,4 +1,3 @@
-import { debugBase } from 'erxes-api-utils'
 import * as Random from 'meteor-random';
 import { Transform, Writable } from 'stream';
 import {
@@ -18,6 +17,7 @@ import {
 import { ICustomerDocument } from '../../../db/models/definitions/customers';
 import { IEngageMessageDocument } from '../../../db/models/definitions/engages';
 import { IUserDocument } from '../../../db/models/definitions/users';
+import { debugBase } from '../../../debuggers';
 import messageBroker from '../../../messageBroker';
 import { MESSAGE_KINDS } from '../../constants';
 import { fetchBySegments } from '../../modules/segments/queryBuilder';

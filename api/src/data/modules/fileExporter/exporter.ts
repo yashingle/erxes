@@ -1,4 +1,3 @@
-import { debugBase } from 'erxes-api-utils';
 import * as moment from 'moment';
 
 import {
@@ -14,6 +13,7 @@ import {
   Users
 } from '../../../db/models';
 import { IUserDocument } from '../../../db/models/definitions/users';
+import { debugBase } from '../../../debuggers';
 import { MODULE_NAMES } from '../../constants';
 import { can } from '../../permissions/utils';
 import { createXlsFile, generateXlsx } from '../../utils';

@@ -1,4 +1,3 @@
-import { debugExternalApi } from 'erxes-api-utils';
 import {
   ConversationMessages,
   Customers,
@@ -8,6 +7,7 @@ import {
 } from '../../db/models';
 import { MESSAGE_TYPES } from '../../db/models/definitions/constants';
 import { IConversationDocument } from '../../db/models/definitions/conversations';
+import { debugExternalApi } from '../../debuggers';
 import { IContext } from '../types';
 
 export default {

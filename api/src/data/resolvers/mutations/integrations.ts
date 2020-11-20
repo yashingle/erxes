@@ -1,4 +1,3 @@
-import { debugExternalApi } from 'erxes-api-utils'
 import * as telemetry from 'erxes-telemetry';
 
 import { getUniqueValue } from '../../../db/factories';
@@ -15,6 +14,7 @@ import {
   IUiOptions
 } from '../../../db/models/definitions/integrations';
 import { IExternalIntegrationParams } from '../../../db/models/Integrations';
+import { debugExternalApi } from '../../../debuggers';
 import messageBroker from '../../../messageBroker';
 import { MODULE_NAMES, RABBITMQ_QUEUES } from '../../constants';
 import { putCreateLog, putDeleteLog, putUpdateLog } from '../../logUtils';
