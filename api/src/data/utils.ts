@@ -1,13 +1,11 @@
 import * as AWS from 'aws-sdk';
+import utils from 'erxes-api-utils';
 import * as fileType from 'file-type';
-import * as admin from 'firebase-admin';
 import * as fs from 'fs';
-import * as Handlebars from 'handlebars';
-import * as nodemailer from 'nodemailer';
 import * as path from 'path';
-import * as requestify from 'requestify';
 import * as strip from 'strip';
 import * as xlsxPopulate from 'xlsx-populate';
+
 import {
   Configs,
   Customers,
@@ -17,35 +15,25 @@ import {
   Webhooks
 } from '../db/models';
 import { IBrandDocument } from '../db/models/definitions/brands';
-import { WEBHOOK_STATUS } from '../db/models/definitions/constants';
 import { ICustomer } from '../db/models/definitions/customers';
-import { EMAIL_DELIVERY_STATUS } from '../db/models/definitions/emailDeliveries';
 import { IUser, IUserDocument } from '../db/models/definitions/users';
 import { OnboardingHistories } from '../db/models/Robot';
-import { debugBase, debugEmail, debugExternalApi } from '../debuggers';
-import memoryStorage from '../inmemoryStorage';
-import { graphqlPubsub } from '../pubsub';
 import { fieldsCombinedByContentType } from './modules/fields/utils';
 
 export const uploadsFolderPath = path.join(__dirname, '../private/uploads');
 
 export const initFirebase = (code: string): void => {
-  if (code.length === 0) {
-    return;
-  }
-
-  const codeString = code.trim();
-
-  if (codeString[0] === '{' && codeString[codeString.length - 1] === '}') {
-    const serviceAccount = JSON.parse(codeString);
-
-    if (serviceAccount.private_key) {
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
-      });
-    }
-  }
+  utils.initFirebase(code)
 };
+
+const models = {
+  Configs,
+  Customers,
+  EmailDeliveries,
+  Notifications,
+  Users,
+  Webhooks
+}
 
 /*
  * Check that given file is not harmful
@@ -476,65 +464,14 @@ export const deleteFile = async (fileName: string): Promise<any> => {
  * Read contents of a file
  */
 export const readFile = (filename: string) => {
-  const filePath = `${__dirname}/../private/emailTemplates/${filename}.html`;
-
-  return fs.readFileSync(filePath, 'utf8');
-};
-
-/**
- * Apply template
- */
-const applyTemplate = async (data: any, templateName: string) => {
-  let template: any = await readFile(templateName);
-
-  template = Handlebars.compile(template.toString());
-
-  return template(data);
+  return utils.readFile(filename)
 };
 
 /**
  * Create default or ses transporter
  */
 export const createTransporter = async ({ ses }) => {
-  if (ses) {
-    const AWS_SES_ACCESS_KEY_ID = await getConfig('AWS_SES_ACCESS_KEY_ID');
-    const AWS_SES_SECRET_ACCESS_KEY = await getConfig(
-      'AWS_SES_SECRET_ACCESS_KEY'
-    );
-    const AWS_REGION = await getConfig('AWS_REGION');
-
-    AWS.config.update({
-      region: AWS_REGION,
-      accessKeyId: AWS_SES_ACCESS_KEY_ID,
-      secretAccessKey: AWS_SES_SECRET_ACCESS_KEY
-    });
-
-    return nodemailer.createTransport({
-      SES: new AWS.SES({ apiVersion: '2010-12-01' })
-    });
-  }
-
-  const MAIL_SERVICE = await getConfig('MAIL_SERVICE');
-  const MAIL_PORT = await getConfig('MAIL_PORT');
-  const MAIL_USER = await getConfig('MAIL_USER');
-  const MAIL_PASS = await getConfig('MAIL_PASS');
-  const MAIL_HOST = await getConfig('MAIL_HOST');
-
-  let auth;
-
-  if (MAIL_USER && MAIL_PASS) {
-    auth = {
-      user: MAIL_USER,
-      pass: MAIL_PASS
-    };
-  }
-
-  return nodemailer.createTransport({
-    service: MAIL_SERVICE,
-    host: MAIL_HOST,
-    port: MAIL_PORT,
-    auth
-  });
+  return utils.createTransporter({ ses });
 };
 
 export interface IEmailParams {
@@ -661,101 +598,14 @@ export const replaceEditorAttributes = async (args: {
  * Send email
  */
 export const sendEmail = async (params: IEmailParams) => {
-  const {
-    toEmails = [],
-    fromEmail,
-    title,
-    customHtml,
-    customHtmlData,
-    template = {},
-    modifier
-  } = params;
-
-  const NODE_ENV = getEnv({ name: 'NODE_ENV' });
-  const DEFAULT_EMAIL_SERVICE = await getConfig('DEFAULT_EMAIL_SERVICE', 'SES');
-  const COMPANY_EMAIL_FROM = await getConfig('COMPANY_EMAIL_FROM', '');
-  const AWS_SES_CONFIG_SET = await getConfig('AWS_SES_CONFIG_SET', '');
-  const AWS_ACCESS_KEY_ID = await getConfig('AWS_ACCESS_KEY_ID', '');
-  const AWS_SES_SECRET_ACCESS_KEY = await getConfig(
-    'AWS_SES_SECRET_ACCESS_KEY',
-    ''
-  );
-  const MAIN_APP_DOMAIN = getEnv({ name: 'MAIN_APP_DOMAIN' });
-
-  // do not send email it is running in test mode
-  if (NODE_ENV === 'test') {
-    return;
-  }
-
-  // try to create transporter or throw configuration error
-  let transporter;
-
-  try {
-    transporter = await createTransporter({
-      ses: DEFAULT_EMAIL_SERVICE === 'SES'
-    });
-  } catch (e) {
-    return debugEmail(e.message);
-  }
-
-  const { data = {}, name } = template;
-
-  // for unsubscribe url
-  data.domain = MAIN_APP_DOMAIN;
-
-  for (const toEmail of toEmails) {
-    if (modifier) {
-      modifier(data, toEmail);
-    }
-
-    // generate email content by given template
-    let html = await applyTemplate(data, name || 'base');
-
-    if (customHtml) {
-      html = Handlebars.compile(customHtml)(customHtmlData || {});
-    }
-
-    const mailOptions: any = {
-      from: fromEmail || COMPANY_EMAIL_FROM,
-      to: toEmail,
-      subject: title,
-      html
-    };
-
-    let headers: { [key: string]: string } = {};
-
-    if (AWS_ACCESS_KEY_ID.length > 0 && AWS_SES_SECRET_ACCESS_KEY.length > 0) {
-      const emailDelivery = await EmailDeliveries.create({
-        kind: 'transaction',
-        to: toEmail,
-        from: fromEmail || COMPANY_EMAIL_FROM,
-        subject: title,
-        body: html,
-        status: EMAIL_DELIVERY_STATUS.PENDING
-      });
-
-      headers = {
-        'X-SES-CONFIGURATION-SET': AWS_SES_CONFIG_SET || 'erxes',
-        EmailDeliveryId: emailDelivery._id
-      };
-    } else {
-      headers['X-SES-CONFIGURATION-SET'] = 'erxes';
-    }
-
-    mailOptions.headers = headers;
-
-    return transporter.sendMail(mailOptions, (error, info) => {
-      debugEmail(error);
-      debugEmail(info);
-    });
-  }
+  return utils.sendEmail(models, params)
 };
 
 /**
  * Returns user's name or email
  */
 export const getUserDetail = (user: IUser) => {
-  return (user.details && user.details.fullName) || user.email;
+  return utils.getUserDetail(user);
 };
 
 export interface ISendNotification {
@@ -774,99 +624,7 @@ export interface ISendNotification {
  * Send a notification
  */
 export const sendNotification = async (doc: ISendNotification) => {
-  const {
-    createdUser,
-    receivers,
-    title,
-    content,
-    notifType,
-    action,
-    contentType,
-    contentTypeId
-  } = doc;
-  let link = doc.link;
-
-  // remove duplicated ids
-  const receiverIds = [...new Set(receivers)];
-
-  // collecting emails
-  const recipients = await Users.find({
-    _id: { $in: receiverIds },
-    isActive: true,
-    doNotDisturb: { $ne: 'Yes' }
-  });
-
-  // collect recipient emails
-  const toEmails: string[] = [];
-
-  for (const recipient of recipients) {
-    if (recipient.getNotificationByEmail && recipient.email) {
-      toEmails.push(recipient.email);
-    }
-  }
-
-  // loop through receiver ids
-  for (const receiverId of receiverIds) {
-    try {
-      // send web and mobile notification
-      const notification = await Notifications.createNotification(
-        {
-          link,
-          title,
-          content,
-          notifType,
-          receiver: receiverId,
-          action,
-          contentType,
-          contentTypeId
-        },
-        createdUser._id
-      );
-
-      graphqlPubsub.publish('notificationInserted', {
-        notificationInserted: {
-          _id: notification._id,
-          userId: receiverId,
-          title: notification.title,
-          content: notification.content
-        }
-      });
-    } catch (e) {
-      // Any other error is serious
-      if (e.message !== 'Configuration does not exist') {
-        throw e;
-      }
-    }
-  } // end receiverIds loop
-
-  const MAIN_APP_DOMAIN = getEnv({ name: 'MAIN_APP_DOMAIN' });
-
-  link = `${MAIN_APP_DOMAIN}${link}`;
-
-  // for controlling email template data filling
-  const modifier = (data: any, email: string) => {
-    const user = recipients.find(item => item.email === email);
-
-    if (user) {
-      data.uid = user._id;
-    }
-  };
-
-  await sendEmail({
-    toEmails,
-    title: 'Notification',
-    template: {
-      name: 'notification',
-      data: {
-        notification: { ...doc, link },
-        action,
-        userName: getUserDetail(createdUser)
-      }
-    },
-    modifier
-  });
-
-  return true;
+  return utils.sendNotification(models, doc);
 };
 
 /**
@@ -903,39 +661,7 @@ export const sendRequest = async (
   { url, method, headers, form, body, params }: IRequestParams,
   errorMessage?: string
 ) => {
-  debugExternalApi(`
-    Sending request to
-    url: ${url}
-    method: ${method}
-    body: ${JSON.stringify(body)}
-    params: ${JSON.stringify(params)}
-  `);
-
-  try {
-    const response = await requestify.request(url, {
-      method,
-      headers: { 'Content-Type': 'application/json', ...(headers || {}) },
-      form,
-      body,
-      params
-    });
-
-    const responseBody = response.getBody();
-
-    debugExternalApi(`
-      Success from : ${url}
-      responseBody: ${JSON.stringify(responseBody)}
-    `);
-
-    return responseBody;
-  } catch (e) {
-    if (e.code === 'ECONNREFUSED' || e.code === 'ENOTFOUND') {
-      throw new Error(errorMessage);
-    } else {
-      const message = e.body || e.message;
-      throw new Error(message);
-    }
-  }
+  return utils.sendRequest(models, { url, method, headers, form, body, params }, errorMessage)
 };
 
 export const registerOnboardHistory = ({
@@ -948,12 +674,12 @@ export const registerOnboardHistory = ({
   OnboardingHistories.getOrCreate({ type, user })
     .then(({ status }) => {
       if (status === 'created') {
-        graphqlPubsub.publish('onboardingChanged', {
+        utils.graphqlPubsub.publish('onboardingChanged', {
           onboardingChanged: { userId: user._id, type }
         });
       }
     })
-    .catch(e => debugBase(e));
+    .catch(e => utils.debugBase(e));
 
 export const authCookieOptions = (secure: boolean) => {
   const oneDay = 1 * 24 * 3600 * 1000; // 1 day
@@ -975,13 +701,10 @@ export const getEnv = ({
   name: string;
   defaultValue?: string;
 }): string => {
-  const value = process.env[name];
-
-  if (!value && typeof defaultValue !== 'undefined') {
-    return defaultValue;
-  }
-
-  return value || '';
+  return utils.getEnv(models, {
+    name,
+    defaultValue
+  })
 };
 
 /**
@@ -1004,53 +727,20 @@ export const sendMobileNotification = async ({
   body: string;
   conversationId: string;
 }): Promise<void> => {
-  if (!admin.apps.length) {
-    return;
-  }
-
-  const transporter = admin.messaging();
-  const tokens: string[] = [];
-
-  if (receivers) {
-    tokens.push(
-      ...(await Users.find({ _id: { $in: receivers } }).distinct(
-        'deviceTokens'
-      ))
-    );
-  }
-
-  if (customerId) {
-    tokens.push(
-      ...(await Customers.findOne({ _id: customerId }).distinct('deviceTokens'))
-    );
-  }
-
-  if (tokens.length > 0) {
-    // send notification
-    for (const token of tokens) {
-      await transporter.send({
-        token,
-        notification: { title, body },
-        data: { conversationId }
-      });
-    }
-  }
+  await utils.sendMobileNotification(models, {
+    receivers,
+    title,
+    body,
+    customerId,
+    conversationId
+  })
 };
 
 export const paginate = (
   collection,
   params: { ids?: string[]; page?: number; perPage?: number }
 ) => {
-  const { page = 0, perPage = 0, ids } = params || { ids: null };
-
-  const _page = Number(page || '1');
-  const _limit = Number(perPage || '20');
-
-  if (ids) {
-    return collection;
-  }
-
-  return collection.limit(_limit).skip((_page - 1) * _limit);
+  return utils.paginate(collection, params)
 };
 
 /*
@@ -1113,40 +803,7 @@ export const sendToWebhook = async (
   type: string,
   params: any
 ) => {
-  const webhooks = await Webhooks.find({
-    'actions.action': action,
-    'actions.type': type
-  });
-
-  if (!webhooks) {
-    return;
-  }
-
-  let data = params;
-  for (const webhook of webhooks) {
-    if (!webhook.url || webhook.url.length === 0) {
-      continue;
-    }
-
-    if (action === 'delete') {
-      data = { type, object: { _id: params.object._id } };
-    }
-
-    sendRequest({
-      url: webhook.url,
-      headers: {
-        'Erxes-token': webhook.token || ''
-      },
-      method: 'post',
-      body: { data: JSON.stringify(data), action, type }
-    })
-      .then(async () => {
-        await Webhooks.updateStatus(webhook._id, WEBHOOK_STATUS.AVAILABLE);
-      })
-      .catch(async () => {
-        await Webhooks.updateStatus(webhook._id, WEBHOOK_STATUS.UNAVAILABLE);
-      });
-  }
+  await utils.sendToWebhook(models, action, type, params);
 };
 
 export default {
@@ -1162,40 +819,14 @@ export const cleanHtml = (content?: string) =>
   strip(content || '').substring(0, 100);
 
 export const validSearchText = (values: string[]) => {
-  const value = values.join(' ');
-
-  if (value.length < 512) {
-    return value;
-  }
-
-  return value.substring(0, 511);
-};
-
-const stringToRegex = (value: string) => {
-  const specialChars = [...'{}[]\\^$.|?*+()'];
-
-  const result = [...value].map(char =>
-    specialChars.includes(char) ? '.?\\' + char : '.?' + char
-  );
-
-  return '.*' + result.join('').substring(2) + '.*';
+  return utils.validSearchText(values);
 };
 
 export const regexSearchText = (
   searchValue: string,
   searchKey = 'searchText'
 ) => {
-  const result: any[] = [];
-
-  searchValue = searchValue.replace(/\s\s+/g, ' ');
-
-  const words = searchValue.split(' ');
-
-  for (const word of words) {
-    result.push({ [searchKey]: new RegExp(`${stringToRegex(word)}`, 'mui') });
-  }
-
-  return { $and: result };
+  return utils.regexSearchText(searchValue, searchKey);
 };
 
 /**
@@ -1231,36 +862,15 @@ export const handleUnsubscription = async (query: {
 };
 
 export const getConfigs = async () => {
-  const configsCache = await memoryStorage().get('configs_erxes_api');
-
-  if (configsCache && configsCache !== '{}') {
-    return JSON.parse(configsCache);
-  }
-
-  const configsMap = {};
-  const configs = await Configs.find({});
-
-  for (const config of configs) {
-    configsMap[config.code] = config.value;
-  }
-
-  memoryStorage().set('configs_erxes_api', JSON.stringify(configsMap));
-
-  return configsMap;
+  return utils.getConfigs(models);
 };
 
 export const getConfig = async (code, defaultValue?) => {
-  const configs = await getConfigs();
-
-  if (!configs[code]) {
-    return defaultValue;
-  }
-
-  return configs[code];
+  return utils.getConfig(models, code, defaultValue);
 };
 
 export const resetConfigsCache = () => {
-  memoryStorage().set('configs_erxes_api', '');
+  utils.resetConfigsCache()
 };
 
 export const frontendEnv = ({
@@ -1272,16 +882,7 @@ export const frontendEnv = ({
   req?: any;
   requestInfo?: any;
 }): string => {
-  const cookies = req ? req.cookies : requestInfo.cookies;
-  const keys = Object.keys(cookies);
-
-  const envs: { [key: string]: string } = {};
-
-  for (const key of keys) {
-    envs[key.replace('REACT_APP_', '')] = cookies[key];
-  }
-
-  return envs[name];
+  return utils.frontendEnv({ name, req, requestInfo })
 };
 
 export const getSubServiceDomain = ({ name }: { name: string }): string => {
