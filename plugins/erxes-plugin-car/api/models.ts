@@ -1,4 +1,4 @@
-
+import { validSearchText } from 'erxes-api-utils'
 import { carCategorySchema, carSchema } from './definitions';
 
 class Car {
@@ -46,19 +46,13 @@ class Car {
     }
   }
 
-  public static fillSearchText(models, doc) {
-    const value = [
+  public static fillSearchText(doc) {
+    return validSearchText([
       doc.plateNumber || '',
       doc.vinNumber || '',
       doc.description || '',
       doc.categoryId || ''
-    ].join(' ');
-
-    if (value.length < 512) {
-      return value;
-    }
-
-    return value.substring(0, 511);
+    ]);
   }
 
   public static getCarName(car) {

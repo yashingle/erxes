@@ -1,3 +1,6 @@
+import { paginate } from 'erxes-api-utils'
+
+
 const generateFilter = async (models, params, commonQuerySelector) => {
   const filter: any = commonQuerySelector;
 
@@ -39,12 +42,10 @@ const carQueries = [
     name: 'cars',
     handler: async (_root, params, { commonQuerySelector, models, checkPermission, user }) => {
       await checkPermission('showCars', user);
-      // return paginate(models.Cars.find(await generateFilter(models, params, commonQuerySelector)), {
-      //   page: params.page,
-      //   perPage: params.perPage
-      // });
-
-      return models.Cars.find(await generateFilter(models, params, commonQuerySelector));
+      return paginate(models.Cars.find(await generateFilter(models, params, commonQuerySelector)), {
+        page: params.page,
+        perPage: params.perPage
+      });
     }
   },
 
@@ -57,15 +58,11 @@ const carQueries = [
       await checkPermission('showCars', user);
       const filter = await generateFilter(models, params, commonQuerySelector);
 
-      // return {
-      //   list: paginate(models.Cars.find(filter), {
-      //     page: params.page,
-      //     perPage: params.perPage
-      //   }),
-      //   totalCount: models.Cars.find(filter).count()
-      // };
       return {
-        list: models.Cars.find(filter),
+        list: paginate(models.Cars.find(filter), {
+          page: params.page,
+          perPage: params.perPage
+        }),
         totalCount: models.Cars.find(filter).count()
       };
     }
