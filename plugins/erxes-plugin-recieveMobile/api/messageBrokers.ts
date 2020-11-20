@@ -1,3 +1,5 @@
+import { regexSearchText, sendEmail } from 'erxes-api-utils'
+
 const sendError = (message) => ({
   status: "error",
   errorMessage: message,
@@ -30,7 +32,7 @@ export default [
             if (!customer) {
               return sendError("User has not customer");
             }
-            const loyalty = await models.Loyalties.getLoyaltyValue(models, customer);
+            const loyalty = await models.Loyalties.getLoyaltyValue(models, customer._id);
 
             filter = {};
             dealIdsOfCustomer = await models.Conformities.savedConformity({
@@ -307,8 +309,7 @@ export default [
             }
 
             if (data.search) {
-              // Object.assign(filter, regexSearchText(data.search));
-              Object.assign(filter, data.search);
+              Object.assign(filter, regexSearchText(data.search));
             }
 
             const stageFilter =
@@ -503,17 +504,17 @@ export default [
 
           return sendSuccess(customer);
 
-        // case 'sendEmail':
-        //   return sendSuccess(await sendEmail({
-        //     toEmails: [data.email],
-        //     title: data.title,
-        //     template: {
-        //       name: data.title,
-        //       data: {
-        //         content: data.newPassword,
-        //       },
-        //     }
-        //   }));
+        case 'sendEmail':
+          return sendSuccess(await sendEmail(models, {
+            toEmails: [data.email],
+            title: data.title,
+            template: {
+              name: data.title,
+              data: {
+                content: data.newPassword,
+              },
+            }
+          }));
 
         case "updateCar":
           return sendSuccess(
