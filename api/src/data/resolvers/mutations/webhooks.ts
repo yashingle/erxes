@@ -1,5 +1,5 @@
+import { WEBHOOK_STATUS } from 'erxes-api-utils';
 import { Webhooks } from '../../../db/models';
-import { WEBHOOK_STATUS } from '../../../db/models/definitions/constants';
 import { IWebhook } from '../../../db/models/definitions/webhook';
 import { MODULE_NAMES } from '../../constants';
 import { putCreateLog, putDeleteLog, putUpdateLog } from '../../logUtils';

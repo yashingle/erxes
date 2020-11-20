@@ -1,4 +1,4 @@
-import { graphqlPubsub } from '../../../pubsub';
+import { graphqlPubsub } from 'erxes-api-utils';
 
 export default {
   /*

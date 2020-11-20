@@ -1,11 +1,14 @@
+import {
+  debugBase,
+  debugExternalApi,
+  inmemoryStorage as memoryStorage
+} from 'erxes-api-utils';
 import { Transform } from 'stream';
 import { Customers } from '../db/models';
 import {
   IValidationResponse,
   IVisitorContact
 } from '../db/models/definitions/customers';
-import { debugBase, debugExternalApi } from '../debuggers';
-import memoryStorage from '../inmemoryStorage';
 import { getEnv, sendRequest } from './utils';
 
 export const validateSingle = async (contact: IVisitorContact) => {

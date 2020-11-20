@@ -1,5 +1,5 @@
 import { HTTPCache, RESTDataSource } from 'apollo-datasource-rest';
-import { debugBase } from '../../debuggers';
+import { debugBase } from 'erxes-api-utils';
 import { getSubServiceDomain } from '../utils';
 
 export default class EngagesAPI extends RESTDataSource {

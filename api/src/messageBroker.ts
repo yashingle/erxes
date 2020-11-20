@@ -1,5 +1,7 @@
 import * as dotenv from 'dotenv';
+import { graphqlPubsub } from 'erxes-api-utils';
 import messageBroker from 'erxes-message-broker';
+
 import {
   receiveEngagesNotification,
   receiveIntegrationsNotification,
@@ -7,7 +9,6 @@ import {
 } from './data/modules/integrations/receiveMessage';
 import { getEnv } from './data/utils';
 import { pluginsRabbitMQ } from './pluginUtils';
-import { graphqlPubsub } from './pubsub';
 
 dotenv.config();
 
@@ -42,7 +43,7 @@ export const initBroker = async (server?) => {
     await receiveEngagesNotification(data);
   });
 
-  for (const channel of Object.keys(pluginsRabbitMQ.consumers)){
+  for (const channel of Object.keys(pluginsRabbitMQ.consumers)) {
     const mbroker = pluginsRabbitMQ.consumers[channel]
     if (mbroker.method === "RPCQueue") {
       consumeRPCQueue(
@@ -64,6 +65,6 @@ export const initBroker = async (server?) => {
   }
 };
 
-export default function() {
+export default function () {
   return client;
 }

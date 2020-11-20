@@ -1,7 +1,7 @@
+import { debugExternalApi } from 'erxes-api-utils';
 import { Conversations, Customers, Integrations, Users } from '../../db/models';
 import { MESSAGE_TYPES } from '../../db/models/definitions/constants';
 import { IMessageDocument } from '../../db/models/definitions/conversationMessages';
-import { debugExternalApi } from '../../debuggers';
 import { IContext } from '../types';
 
 export default {

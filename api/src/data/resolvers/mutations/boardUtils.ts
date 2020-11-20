@@ -1,4 +1,6 @@
-import resolvers from '..';
+import { graphqlPubsub } from 'erxes-api-utils';
+
+import resolvers from '../';
 import {
   ActivityLogs,
   Boards,
@@ -35,7 +37,6 @@ import {
   ITicketDocument
 } from '../../../db/models/definitions/tickets';
 import { IUserDocument } from '../../../db/models/definitions/users';
-import { graphqlPubsub } from '../../../pubsub';
 import { putCreateLog, putDeleteLog, putUpdateLog } from '../../logUtils';
 import { checkUserIds } from '../../utils';
 import {

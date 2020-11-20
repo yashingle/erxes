@@ -1,4 +1,5 @@
 import * as dotenv from 'dotenv';
+import { debugWorkers, initMemoryStorage, inmemoryStorage } from 'erxes-api-utils';
 import * as faker from 'faker';
 import * as fs from 'fs';
 import { disconnect } from 'mongoose';
@@ -46,8 +47,6 @@ import {
   MESSAGE_TYPES,
   TAG_TYPES
 } from '../db/models/definitions/constants';
-import { debugWorkers } from '../debuggers';
-import memoryStorage, { initMemoryStorage } from '../inmemoryStorage';
 import {
   clearEmptyValues,
   generatePronoun,
@@ -426,7 +425,7 @@ const main = async () => {
     ]);
 
     if (randomCustomer[0]) {
-      memoryStorage().set(
+      inmemoryStorage().set(
         `customer_last_status_${randomCustomer[0]._id}`,
         'left'
       );

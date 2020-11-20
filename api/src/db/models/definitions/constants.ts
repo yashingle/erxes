@@ -744,9 +744,3 @@ export const WEBHOOK_ACTIONS = [
   { label: 'Engage messages', action: 'create', type: 'engageMessages' },
   { label: 'Popup submitted', action: 'create', type: 'popupSubmitted' }
 ];
-
-export const WEBHOOK_STATUS = {
-  AVAILABLE: 'available',
-  UNAVAILABLE: 'unavailable',
-  ALL: ['available', 'unavailable']
-};

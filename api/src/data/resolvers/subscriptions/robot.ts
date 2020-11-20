@@ -1,5 +1,5 @@
 import { withFilter } from 'apollo-server-express';
-import { graphqlPubsub } from '../../../pubsub';
+import { graphqlPubsub } from 'erxes-api-utils';
 
 export default {
   onboardingChanged: {

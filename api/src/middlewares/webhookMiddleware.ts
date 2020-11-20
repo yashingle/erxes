@@ -1,3 +1,4 @@
+import { graphqlPubsub } from 'erxes-api-utils';
 import { NodeVM } from 'vm2';
 
 import {
@@ -6,7 +7,6 @@ import {
   Customers,
   Integrations
 } from '../db/models';
-import { graphqlPubsub } from '../pubsub';
 
 const findCustomer = async doc => {
   let customer;

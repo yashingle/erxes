@@ -1,3 +1,4 @@
+import { debugExternalApi } from 'erxes-api-utils'
 import {
   ActivityLogs,
   Conformities,
@@ -8,7 +9,6 @@ import {
   Tasks
 } from '../../../db/models';
 import { IActivityLogDocument } from '../../../db/models/definitions/activityLogs';
-import { debugExternalApi } from '../../../debuggers';
 import { moduleRequireLogin } from '../../permissions/wrappers';
 import { IContext } from '../../types';
 

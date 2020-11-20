@@ -1,4 +1,6 @@
+import { debugBase, graphqlPubsub, inmemoryStorage } from 'erxes-api-utils';
 import * as strip from 'strip';
+
 import {
   Brands,
   Companies,
@@ -30,10 +32,7 @@ import {
   IKnowledgebaseCredentials,
   ILeadCredentials
 } from '../../../db/models/definitions/messengerApps';
-import { debugBase } from '../../../debuggers';
 import { trackViewPageEvent } from '../../../events';
-import memoryStorage from '../../../inmemoryStorage';
-import { graphqlPubsub } from '../../../pubsub';
 import { AUTO_BOT_MESSAGES, BOT_MESSAGE_TYPES } from '../../constants';
 import {
   registerOnboardHistory,
@@ -242,15 +241,15 @@ const widgetMutations = {
       ...(customer.primaryEmail
         ? {}
         : {
-            emails: [email],
-            primaryEmail: email
-          }),
+          emails: [email],
+          primaryEmail: email
+        }),
       ...(customer.primaryPhone
         ? {}
         : {
-            phones: [phone],
-            primaryPhone: phone
-          })
+          phones: [phone],
+          primaryPhone: phone
+        })
     };
 
     // update location info and missing fields
@@ -380,10 +379,10 @@ const widgetMutations = {
 
     customer = customer
       ? await Customers.updateMessengerCustomer({
-          _id: customer._id,
-          doc,
-          customData
-        })
+        _id: customer._id,
+        doc,
+        customData
+      })
       : await Customers.createMessengerCustomer({ doc, customData });
 
     // get or create company
@@ -569,11 +568,11 @@ const widgetMutations = {
         responses.length !== 0
           ? responses
           : [
-              {
-                type: 'text',
-                text: AUTO_BOT_MESSAGES.NO_RESPONSE
-              }
-            ];
+            {
+              type: 'text',
+              text: AUTO_BOT_MESSAGES.NO_RESPONSE
+            }
+          ];
 
       const botMessage = await Messages.createMessage({
         conversationId: conversation._id,
@@ -597,13 +596,13 @@ const widgetMutations = {
       });
     }
 
-    const customerLastStatus = await memoryStorage().get(
+    const customerLastStatus = await inmemoryStorage().get(
       `customer_last_status_${customerId}`,
       'left'
     );
 
     if (customerLastStatus === 'left') {
-      memoryStorage().set(`customer_last_status_${customerId}`, 'joined');
+      inmemoryStorage().set(`customer_last_status_${customerId}`, 'joined');
 
       // customer has joined + time
       const conversationMessages = await Conversations.changeCustomerStatus(
@@ -807,11 +806,11 @@ const widgetMutations = {
         responses.length !== 0
           ? responses
           : [
-              {
-                type: 'text',
-                text: AUTO_BOT_MESSAGES.NO_RESPONSE
-              }
-            ];
+            {
+              type: 'text',
+              text: AUTO_BOT_MESSAGES.NO_RESPONSE
+            }
+          ];
     } else {
       botData = [
         {

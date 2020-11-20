@@ -1,7 +1,7 @@
+import { initMemoryStorage } from 'erxes-api-utils';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import * as mongoose from 'mongoose';
 import { connectionOptions } from '../db/connection';
-import { initMemoryStorage } from '../inmemoryStorage';
 import { initBroker } from '../messageBroker';
 
 // May require additional time for downloading MongoDB binaries

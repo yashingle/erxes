@@ -1,13 +1,14 @@
 import { gql } from 'apollo-server-express';
 import * as dotenv from 'dotenv';
+import { debugDb } from 'erxes-api-utils';
 import { graphql } from 'graphql';
 import { makeExecutableSchema } from 'graphql-tools';
-import mongoose = require('mongoose');
 import resolvers from '../data/resolvers';
 import { mutations, queries, subscriptions, types } from '../data/schema';
 import { getEnv } from '../data/utils';
-import { debugDb } from '../debuggers';
 import { userFactory } from './factories';
+
+import mongoose = require('mongoose');
 
 dotenv.config();
 

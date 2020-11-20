@@ -1,8 +1,8 @@
+import { frontendEnv, inmemoryStorage as memoryStorage } from 'erxes-api-utils';
 import * as telemetry from 'erxes-telemetry';
 import * as jwt from 'jsonwebtoken';
-import { frontendEnv } from '../data/utils';
 import { Users } from '../db/models';
-import memoryStorage from '../inmemoryStorage';
+
 /*
  * Finds user object by passed tokens
  * @param {Object} req - Request object

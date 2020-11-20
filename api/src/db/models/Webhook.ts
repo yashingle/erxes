@@ -1,6 +1,6 @@
+import { WEBHOOK_STATUS } from 'erxes-api-utils';
 import { Model, model } from 'mongoose';
 import { getUniqueValue } from '../factories';
-import { WEBHOOK_STATUS } from './definitions/constants';
 import {
   IWebhook,
   IWebhookDocument,

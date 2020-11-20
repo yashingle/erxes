@@ -1,6 +1,6 @@
 import { withFilter } from 'apollo-server-express';
+import { graphqlPubsub } from 'erxes-api-utils';
 import { Channels, Conversations, Integrations } from '../../../db/models';
-import { graphqlPubsub } from '../../../pubsub';
 
 export default {
   /*

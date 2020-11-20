@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 import * as elasticsearch from 'elasticsearch';
 import * as telemetry from 'erxes-telemetry';
 import * as mongoUri from 'mongo-uri';
-import { debugBase } from './debuggers';
+import { debugBase } from 'erxes-api-utils';
 
 // load environment variables
 dotenv.config();
