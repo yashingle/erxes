@@ -15,13 +15,12 @@ class Loyalty {
     if (excludeDealId) {
       match = { $and: [{ customerId: customerId }, { dealId: { $ne: excludeDealId } }] };
     }
-    console.log(match)
 
     const response = await models.Loyalties.aggregate([
       { $match: match },
       { $group: { _id: customerId, sumLoyalty: { $sum: "$value" } } }
     ]);
-    console.log(response)
+
     if (!response.length) {
       return 0;
     }
@@ -67,31 +66,31 @@ class Loyalty {
     })
   }
 
-  public static async CalcLoyalty(models, deal) {
+  public static async CalcLoyalty(models, memoryStorage, deal) {
     const amounts = deal.productsData?.map(item => item.tickUsed ? item.amount || 0 : 0) || [];
     const sumAmount = amounts.reduce((preVal, currVal) => {
       return preVal + currVal
     })
 
-    return this.convertCurrencyToLoyalty(sumAmount);
+    return this.convertCurrencyToLoyalty(models, memoryStorage, sumAmount);
   }
 
-  static async UseLoyalty(deal) {
-    const ratio = await getConfig('LOYALTY_RATIO_CURRENCY', 1);
+  static async UseLoyalty(models, memoryStorage, deal) {
+    const ratio = await getConfig(models, memoryStorage, 'LOYALTY_RATIO_CURRENCY', 1);
     return (deal.paymentsData?.loyalty?.amount || 0) / ratio;
   }
 
-  public static async convertLoyaltyToCurrency(models, value: number) {
-    const ratio = await getConfig('LOYALTY_RATIO_CURRENCY', 1);
+  public static async convertLoyaltyToCurrency(models, memoryStorage, value: number) {
+    const ratio = await getConfig(models, memoryStorage, 'LOYALTY_RATIO_CURRENCY', 1);
     return value * ratio;
   }
 
-  static async convertCurrencyToLoyalty(currency: number) {
-    const percent = await getConfig('LOYALTY_PERCENT_OF_DEAL', 0);
+  static async convertCurrencyToLoyalty(models, memoryStorage, currency: number) {
+    const percent = await getConfig(models, memoryStorage, 'LOYALTY_PERCENT_OF_DEAL', 0);
     return currency / 100 * percent;
   }
 
-  public static async dealChangeCheckLoyalty(models, deal, stageId: string, user = null) {
+  public static async dealChangeCheckLoyalty(models, memoryStorage, deal, stageId: string, user = null) {
     const customerIds = await models.Conformities.savedConformity({ mainType: 'deal', mainTypeId: deal._id, relTypes: ['customer'] });
     if (!customerIds) {
       return;
@@ -99,11 +98,13 @@ class Loyalty {
 
     const customers = await models.Customers.find({ _id: { $in: customerIds } });
     const stage = await models.Stages.getStage(stageId);
+
     let valueForDeal = 0;
     let valueForUse = 0;
+
     if (stage.probability === "Won") {
-      valueForDeal += await this.CalcLoyalty(models, deal);
-      valueForUse += await this.UseLoyalty(deal);
+      valueForDeal += await this.CalcLoyalty(models, memoryStorage, deal);
+      valueForUse += await this.UseLoyalty(models, memoryStorage, deal);
     }
 
     const value = (valueForDeal - valueForUse) / (customers.length || 1);
@@ -111,7 +112,7 @@ class Loyalty {
     for (const customer of customers) {
       const loyalty = await this.getLoyaltyOfDeal(models, customer, deal);
 
-      const limit = await models.Loyalties.getLoyaltyValue(models, customer, deal._id)
+      const limit = await models.Loyalties.getLoyaltyValue(models, customer._id, deal._id)
 
       if (limit < value * -1) {
         throw new Error('The loyalty used exceeds the accumulated loyalty.');
@@ -131,7 +132,7 @@ class Loyalty {
         await models.Loyalties.create(doc);
       }
     }
-    return
+    return;
   }
 
   public static async deleteLoyaltyOfDeal(models, dealId: string) {

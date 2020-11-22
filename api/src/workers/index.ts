@@ -1,10 +1,10 @@
 import * as cookieParser from 'cookie-parser';
 import * as dotenv from 'dotenv';
-import { initMemoryStorage } from 'erxes-api-utils'
 import * as express from 'express';
 import { filterXSS } from 'xss';
 import { connect } from '../db/connection';
 import { debugWorkers } from '../debuggers';
+import { initMemoryStorage } from '../inmemoryStorage';
 import userMiddleware from '../middlewares/userMiddleware';
 import { initBroker } from './messageBroker';
 

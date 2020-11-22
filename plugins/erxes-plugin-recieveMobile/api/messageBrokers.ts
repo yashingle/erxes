@@ -470,7 +470,7 @@ export default [
   {
     method: "Queue",
     channel: "mobile_backend_to_api",
-    handler: async (msg, { models }) => {
+    handler: async (msg, { models, memoryStorage }) => {
       const { action, data } = msg;
       let customer: any = null;
 
@@ -505,7 +505,7 @@ export default [
           return sendSuccess(customer);
 
         case 'sendEmail':
-          return sendSuccess(await sendEmail(models, {
+          return sendSuccess(await sendEmail(models, memoryStorage, process, {
             toEmails: [data.email],
             title: data.title,
             template: {

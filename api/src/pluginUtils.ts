@@ -3,16 +3,25 @@ import * as mongoose from 'mongoose';
 import * as path from 'path';
 import { can, registerModule } from './data/permissions/utils';
 import { checkLogin } from './data/permissions/wrappers';
+import memoryStorage from './inmemoryStorage';
+import { graphqlPubsub } from './pubsub';
 
-export const pluginsRabbitMQ: {
-  consumers: any;
-  allModels: any;
-  allConstants: any;
-} = {
-  consumers: null,
-  allModels: null,
-  allConstants: null
-};
+export const allModels = require('./db/models');
+
+export const defConstants = require('./db/models/definitions/constants');
+export const dataConstants = require('./data/constants')
+export const allConstants = { ...dataConstants, ...defConstants }
+
+export const pluginsConsumers = {}
+
+interface IAfterMutations {
+  [type: string]: {
+    [action: string]: {
+      callBack: void
+    }[];
+  };
+}
+export const callAfterMutations: IAfterMutations[] | {} = {};
 
 export const execInEveryPlugin = (callback) => {
   const pluginsPath = path.resolve(__dirname, process.env.NODE_ENV === 'production' ? './plugins' : '../../plugins');
@@ -28,6 +37,7 @@ export const execInEveryPlugin = (callback) => {
         let graphqlQueries = [];
         let graphqlResolvers = [];
         let graphqlMutations = [];
+        let afterMutations = [];
         let constants = {};
 
         const graphqlSchema = {
@@ -45,6 +55,7 @@ export const execInEveryPlugin = (callback) => {
         const graphqlQueriesPath = `${pluginsPath}/${plugin}/api/graphql/queries.${ext}`
         const graphqlResolversPath = `${pluginsPath}/${plugin}/api/graphql/resolvers.${ext}`
         const graphqlMutationsPath = `${pluginsPath}/${plugin}/api/graphql/mutations.${ext}`
+        const afterMutationsPath = `${pluginsPath}/${plugin}/api/graphql/afterMutations.${ext}`
         const modelsPath = `${pluginsPath}/${plugin}/api/models.${ext}`
         const constantsPath = `${pluginsPath}/${plugin}/api/constants.${ext}`
 
@@ -86,6 +97,10 @@ export const execInEveryPlugin = (callback) => {
           graphqlMutations = require(graphqlMutationsPath).default;
         }
 
+        if (fs.existsSync(afterMutationsPath)) {
+          afterMutations = require(afterMutationsPath).default;
+        }
+
         if (fs.existsSync(graphqlSchemaPath)) {
           const { types, queries, mutations } = require(graphqlSchemaPath);
 
@@ -110,6 +125,7 @@ export const execInEveryPlugin = (callback) => {
           graphqlResolvers,
           graphqlQueries,
           graphqlMutations,
+          afterMutations,
           models,
           constants
         })
@@ -130,15 +146,19 @@ const checkPermission = async (actionName, user) => {
 
 export const extendViaPlugins = (app, resolvers, typeDefDetails): Promise<any> => new Promise((resolve) => {
   let { types, queries, mutations } = typeDefDetails;
-  const rqPlugins = {}
 
-  execInEveryPlugin(async ({ constants, isLastIteration, graphqlSchema, graphqlResolvers, graphqlQueries, graphqlMutations, routes, models, messageBrokers }) => {
-    const allModels = require('./db/models');
-    const defConstants = require('./db/models/definitions/constants');
-    const dataConstants = require('./data/constants')
-
-    const allConstants = { ...dataConstants, ...defConstants }
-
+  execInEveryPlugin(async ({
+    constants,
+    isLastIteration,
+    graphqlSchema,
+    graphqlResolvers,
+    graphqlQueries,
+    graphqlMutations,
+    afterMutations,
+    routes,
+    models,
+    messageBrokers
+  }) => {
     routes.forEach(route => {
       app[route.method.toLowerCase()](route.path, (req, res) => {
         return res.send(route.handler({ req, models: allModels, constants: allConstants }));
@@ -191,6 +211,8 @@ export const extendViaPlugins = (app, resolvers, typeDefDetails): Promise<any> =
         ...context,
         constants: allConstants,
         models: allModels,
+        memoryStorage,
+        graphqlPubsub,
         checkLogin,
         checkPermission,
       };
@@ -225,17 +247,32 @@ export const extendViaPlugins = (app, resolvers, typeDefDetails): Promise<any> =
 
     if (messageBrokers.length) {
       messageBrokers.forEach(async (mbroker) => {
-        if (!Object.keys(rqPlugins).includes(mbroker.channel)) {
-          rqPlugins[mbroker.channel] = {}
+        if (!Object.keys(pluginsConsumers).includes(mbroker.channel)) {
+          pluginsConsumers[mbroker.channel] = {}
         }
-        rqPlugins[mbroker.channel] = mbroker
+        pluginsConsumers[mbroker.channel] = mbroker
+      });
+    }
+
+    if (afterMutations.length) {
+      afterMutations.forEach(async (afterMutation) => {
+        const { type, action } = afterMutation;
+
+        if (!Object.keys(callAfterMutations).includes(type)) {
+          callAfterMutations[type] = {};
+        }
+
+        if (!Object.keys(callAfterMutations[type]).includes(action)) {
+          callAfterMutations[type][action] = [];
+        }
+
+        callAfterMutations[type][action].push(
+          afterMutation.handler
+        )
       });
     }
 
     if (isLastIteration) {
-      pluginsRabbitMQ.allModels = allModels
-      pluginsRabbitMQ.allConstants = allConstants
-      pluginsRabbitMQ.consumers = rqPlugins
       return resolve({ types, queries, mutations })
     }
   });

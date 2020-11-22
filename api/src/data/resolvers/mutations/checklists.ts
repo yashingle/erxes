@@ -1,9 +1,9 @@
-import { graphqlPubsub } from 'erxes-api-utils';
 import { ChecklistItems, Checklists } from '../../../db/models';
 import {
   IChecklist,
   IChecklistItem
 } from '../../../db/models/definitions/checklists';
+import { graphqlPubsub } from '../../../pubsub';
 import { MODULE_NAMES } from '../../constants';
 import { putCreateLog, putDeleteLog, putUpdateLog } from '../../logUtils';
 import { moduleRequireLogin } from '../../permissions/wrappers';

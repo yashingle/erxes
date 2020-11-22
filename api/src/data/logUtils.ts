@@ -49,7 +49,10 @@ import {
   Users,
   UsersGroups
 } from '../db/models/index';
+import memoryStorage from '../inmemoryStorage';
 import messageBroker from '../messageBroker';
+import { graphqlPubsub } from '../pubsub';
+import { allConstants, allModels, callAfterMutations } from '../pluginUtils';
 import { MODULE_NAMES, RABBITMQ_QUEUES } from './constants';
 import {
   getSubServiceDomain,
@@ -92,7 +95,7 @@ export interface ILogDataParams {
   updatedDocument?: any;
 }
 
-interface IFinalLogParams extends ILogDataParams {
+export interface IFinalLogParams extends ILogDataParams {
   action: string;
 }
 
@@ -995,19 +998,16 @@ const gatherDescriptions = async (
       extraDesc.push({ contentTypeId: obj.contentTypeId, name: itemName });
 
       if (action === LOG_ACTIONS.CREATE) {
-        description = `"${
-          obj.title
-        }" has been created in ${obj.contentType.toUpperCase()} "${itemName}"`;
+        description = `"${obj.title
+          }" has been created in ${obj.contentType.toUpperCase()} "${itemName}"`;
       }
       if (action === LOG_ACTIONS.UPDATE) {
-        description = `"${
-          obj.title
-        }" saved in ${obj.contentType.toUpperCase()} "${itemName}" has been edited`;
+        description = `"${obj.title
+          }" saved in ${obj.contentType.toUpperCase()} "${itemName}" has been edited`;
       }
       if (action === LOG_ACTIONS.DELETE) {
-        description = `"${
-          obj.title
-        }" from ${obj.contentType.toUpperCase()} "${itemName}" has been removed`;
+        description = `"${obj.title
+          }" from ${obj.contentType.toUpperCase()} "${itemName}" has been removed`;
       }
 
       break;
@@ -1474,6 +1474,22 @@ export const putDeleteLog = async (
 };
 
 const putLog = async (params: IFinalLogParams, user: IUserDocument) => {
+
+  // mutation after wrapper
+  if (callAfterMutations) {
+    const { type, action } = params;
+    if (callAfterMutations[type][action].length) {
+      for (const handler of callAfterMutations[type][action]) {
+        await handler({}, params, {
+          constants: allConstants,
+          models: allModels,
+          memoryStorage,
+          graphqlPubsub
+        });
+      }
+    }
+  }
+
   try {
     return messageBroker().sendMessage(RABBITMQ_QUEUES.PUT_LOG, {
       ...params,

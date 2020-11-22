@@ -1,4 +1,3 @@
-import { graphqlPubsub } from 'erxes-api-utils';
 import {
   Companies,
   Customers,
@@ -21,6 +20,7 @@ import { IDealDocument } from '../../../db/models/definitions/deals';
 import { IInternalNote } from '../../../db/models/definitions/internalNotes';
 import { ITaskDocument } from '../../../db/models/definitions/tasks';
 import { ITicketDocument } from '../../../db/models/definitions/tickets';
+import { graphqlPubsub } from '../../../pubsub';
 import { MODULE_NAMES } from '../../constants';
 import { putCreateLog, putDeleteLog, putUpdateLog } from '../../logUtils';
 import { moduleRequireLogin } from '../../permissions/wrappers';

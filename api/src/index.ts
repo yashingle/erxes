@@ -3,8 +3,6 @@ import * as cors from 'cors';
 import * as dotenv from 'dotenv';
 import {
   frontendEnv,
-  getEnv,
-  initMemoryStorage
 } from 'erxes-api-utils';
 import * as telemetry from 'erxes-telemetry';
 import * as express from 'express';
@@ -23,6 +21,7 @@ import {
   authCookieOptions,
   deleteFile,
   getSubServiceDomain,
+  getEnv,
   handleUnsubscription,
   readFileRequest,
   registerOnboardHistory
@@ -41,6 +40,7 @@ import {
   trackViewPageEvent,
   updateCustomerProperty
 } from './events';
+import { initMemoryStorage } from './inmemoryStorage';
 import { initBroker } from './messageBroker';
 import { importer, uploader } from './middlewares/fileMiddleware';
 import userMiddleware from './middlewares/userMiddleware';

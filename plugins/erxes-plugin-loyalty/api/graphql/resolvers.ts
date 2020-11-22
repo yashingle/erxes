@@ -1,4 +1,4 @@
-const queries = [
+const resolvers = [
   {
     type: 'Loyalty',
     field: 'user',
@@ -30,4 +30,4 @@ const queries = [
   }
 ]
 
-export default queries;
+export default resolvers;

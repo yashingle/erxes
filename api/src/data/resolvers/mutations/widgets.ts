@@ -1,6 +1,4 @@
-import { graphqlPubsub, inmemoryStorage } from 'erxes-api-utils';
 import * as strip from 'strip';
-
 import {
   Brands,
   Companies,
@@ -34,6 +32,8 @@ import {
 } from '../../../db/models/definitions/messengerApps';
 import { debugBase } from '../../../debuggers';
 import { trackViewPageEvent } from '../../../events';
+import memoryStorage from '../../../inmemoryStorage';
+import { graphqlPubsub } from '../../../pubsub';
 import { AUTO_BOT_MESSAGES, BOT_MESSAGE_TYPES } from '../../constants';
 import {
   registerOnboardHistory,
@@ -597,13 +597,13 @@ const widgetMutations = {
       });
     }
 
-    const customerLastStatus = await inmemoryStorage().get(
+    const customerLastStatus = await memoryStorage().get(
       `customer_last_status_${customerId}`,
       'left'
     );
 
     if (customerLastStatus === 'left') {
-      inmemoryStorage().set(`customer_last_status_${customerId}`, 'joined');
+      memoryStorage().set(`customer_last_status_${customerId}`, 'joined');
 
       // customer has joined + time
       const conversationMessages = await Conversations.changeCustomerStatus(

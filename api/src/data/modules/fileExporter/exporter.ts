@@ -1,5 +1,4 @@
 import * as moment from 'moment';
-
 import {
   Brands,
   Channels,

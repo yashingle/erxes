@@ -1,4 +1,3 @@
-import { graphqlPubsub } from 'erxes-api-utils';
 import * as strip from 'strip';
 import * as _ from 'underscore';
 import {
@@ -20,6 +19,7 @@ import { IConversationDocument } from '../../../db/models/definitions/conversati
 import { IUserDocument } from '../../../db/models/definitions/users';
 import { debugExternalApi } from '../../../debuggers';
 import messageBroker from '../../../messageBroker';
+import { graphqlPubsub } from '../../../pubsub';
 import { AUTO_BOT_MESSAGES } from '../../constants';
 import { checkPermission, requireLogin } from '../../permissions/wrappers';
 import { IContext } from '../../types';

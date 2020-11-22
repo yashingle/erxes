@@ -1,4 +1,3 @@
-import { graphqlPubsub } from 'erxes-api-utils';
 import {
   ConversationMessages,
   Conversations,
@@ -8,6 +7,7 @@ import {
   Users
 } from '../../../db/models';
 import { CONVERSATION_STATUSES } from '../../../db/models/definitions/constants';
+import { graphqlPubsub } from '../../../pubsub';
 import { getConfigs } from '../../utils';
 
 const sendError = message => ({

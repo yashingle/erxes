@@ -1,6 +1,6 @@
-import { graphqlPubsub } from 'erxes-api-utils';
 import { NotificationConfigurations, Notifications } from '../../../db/models';
 import { IConfig } from '../../../db/models/definitions/notifications';
+import { graphqlPubsub } from '../../../pubsub';
 import { moduleRequireLogin } from '../../permissions/wrappers';
 import { IContext } from '../../types';
 

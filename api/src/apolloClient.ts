@@ -1,12 +1,13 @@
 import { ApolloServer, gql, PlaygroundConfig } from 'apollo-server-express';
 import * as cookie from 'cookie';
 import * as dotenv from 'dotenv';
-import { graphqlPubsub, inmemoryStorage as memoryStorage } from 'erxes-api-utils';
 import * as jwt from 'jsonwebtoken';
 import { EngagesAPI, IntegrationsAPI } from './data/dataSources';
 import resolvers from './data/resolvers';
 import * as typeDefDetails from './data/schema';
 import { Conversations, Customers, Users } from './db/models';
+import memoryStorage from './inmemoryStorage';
+import { graphqlPubsub } from './pubsub';
 import { extendViaPlugins } from './pluginUtils';
 
 // load environment variables

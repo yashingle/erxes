@@ -1,5 +1,5 @@
-import { graphqlPubsub } from 'erxes-api-utils';
 import { OnboardingHistories, RobotEntries } from '../../../db/models/Robot';
+import { graphqlPubsub } from '../../../pubsub';
 import { IContext } from '../../types';
 
 const robotMutations = {

@@ -2,7 +2,6 @@ import * as formidable from 'formidable';
 import * as request from 'request';
 import * as _ from 'underscore';
 import { filterXSS } from 'xss';
-
 import { RABBITMQ_QUEUES } from '../data/constants';
 import { can } from '../data/permissions/utils';
 import {

@@ -20,6 +20,8 @@ import { ICustomer } from '../db/models/definitions/customers';
 import { IUser, IUserDocument } from '../db/models/definitions/users';
 import { OnboardingHistories } from '../db/models/Robot';
 import { debugBase } from '../debuggers';
+import memoryStorage from '../inmemoryStorage';
+import { graphqlPubsub } from '../pubsub';
 import { fieldsCombinedByContentType } from './modules/fields/utils';
 
 export const uploadsFolderPath = path.join(__dirname, '../private/uploads');
@@ -487,7 +489,7 @@ export const readFile = (filename: string) => {
  * Create default or ses transporter
  */
 export const createTransporter = async ({ ses }) => {
-  return utils.createTransporter({ ses });
+  return utils.createTransporter(models, memoryStorage, { ses });
 };
 
 export interface IEmailParams {
@@ -614,7 +616,7 @@ export const replaceEditorAttributes = async (args: {
  * Send email
  */
 export const sendEmail = async (params: IEmailParams) => {
-  return utils.sendEmail(models, params)
+  return utils.sendEmail(models, memoryStorage, params)
 };
 
 /**
@@ -640,7 +642,7 @@ export interface ISendNotification {
  * Send a notification
  */
 export const sendNotification = async (doc: ISendNotification) => {
-  return utils.sendNotification(models, doc);
+  return utils.sendNotification(models, memoryStorage, graphqlPubsub, doc);
 };
 
 /**
@@ -690,7 +692,7 @@ export const registerOnboardHistory = ({
   OnboardingHistories.getOrCreate({ type, user })
     .then(({ status }) => {
       if (status === 'created') {
-        utils.graphqlPubsub.publish('onboardingChanged', {
+        graphqlPubsub.publish('onboardingChanged', {
           onboardingChanged: { userId: user._id, type }
         });
       }
@@ -717,7 +719,7 @@ export const getEnv = ({
   name: string;
   defaultValue?: string;
 }): string => {
-  return utils.getEnv(models, {
+  return utils.getEnv({
     name,
     defaultValue
   })
@@ -878,15 +880,15 @@ export const handleUnsubscription = async (query: {
 };
 
 export const getConfigs = async () => {
-  return utils.getConfigs(models);
+  return utils.getConfigs(models, memoryStorage);
 };
 
 export const getConfig = async (code, defaultValue?) => {
-  return utils.getConfig(models, code, defaultValue);
+  return utils.getConfig(models, memoryStorage, code, defaultValue);
 };
 
 export const resetConfigsCache = () => {
-  utils.resetConfigsCache()
+  utils.resetConfigsCache(memoryStorage);
 };
 
 export const frontendEnv = ({
