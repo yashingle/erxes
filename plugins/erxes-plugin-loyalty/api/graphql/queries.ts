@@ -16,10 +16,13 @@ const carQueries = [
   },
   {
     name: 'customerLoyalty',
-    handler: async(_root, params, {models, checkPermission, user}) => {
+    handler: async (_root, params, { models, checkPermission, user }) => {
       await checkPermission('showLoyalties', user);
 
-      return models.Loyalties.getLoyaltyValue(models, params.customerId);
+      return {
+        customerId: params.customerId,
+        loyalty: await models.Loyalties.getLoyaltyValue(models, params.customerId)
+      };
     }
   }
 ]

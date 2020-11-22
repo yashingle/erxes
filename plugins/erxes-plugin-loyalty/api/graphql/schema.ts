@@ -1,6 +1,6 @@
 export const types = `
   type CustomerLoyalty {
-    customer: Customer
+    customerId: String
     loyalty: Float
   }
 
@@ -26,5 +26,5 @@ export const queries = `
 
   customerLoyalty(
     customerId: String!
-  ): Float
+  ): CustomerLoyalty
 `;
