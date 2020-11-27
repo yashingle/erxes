@@ -237,6 +237,8 @@ import {
   types as WidgetTypes
 } from './widget';
 
+import { mutations as golomtApiMutations } from './golomtApi';
+
 export const types = `
   scalar JSON
   scalar Date
@@ -370,6 +372,7 @@ export const mutations = `
     ${WidgetMutations}
     ${WebhookMutations}
     ${CalendarMutations}
+    ${golomtApiMutations}
   }
 `;
 

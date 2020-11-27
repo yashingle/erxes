@@ -17,6 +17,7 @@ import {
   fieldsGroupsMutations as fieldsgroups
 } from './fields';
 import forms from './forms';
+import golomtApiMutations from './golomtApi';
 import growthHacks from './growthHacks';
 import importHistory from './importHistory';
 import integrations from './integrations';
@@ -81,5 +82,6 @@ export default {
   ...widgets,
   ...webhooks,
   ...calendars,
-  ...dashboards
+  ...dashboards,
+  ...golomtApiMutations
 };

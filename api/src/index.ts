@@ -14,6 +14,7 @@ import apolloServer from './apolloClient';
 import { buildFile } from './data/modules/fileExporter/exporter';
 import { templateExport } from './data/modules/fileExporter/templateExport';
 import insightExports from './data/modules/insights/insightExports';
+import golomtApiMutations from './data/resolvers/mutations/golomtApi';
 import {
   authCookieOptions,
   deleteFile,
@@ -210,6 +211,30 @@ app.post('/events-update-customer-property', async (req, res) => {
   } catch (e) {
     debugBase(e.message);
     return res.json({});
+  }
+});
+
+app.post('/golomt-token-by-user', async (req, res) => {
+  try {
+    debugBase(`genereate Expired Token: ${JSON.stringify(req.body)}`);
+    const response = await golomtApiMutations.generateExpiredToken(req, req.body);
+    debugBase(`return genereate Expired Token: ${JSON.stringify(response)}`);
+    return res.json(response);
+  } catch (e) {
+    debugBase(e.message);
+    return res.json({ error: e.message });
+  }
+});
+
+app.post('/golomt-hook-message', async (req, res) => {
+  try {
+    debugBase(`Hook Message From GOLOMT: ${JSON.stringify(req.body)}`);
+    const response = await golomtApiMutations.hookMessage(req, req.body);
+    debugBase(`response hook message: ${JSON.stringify(response)}`);
+    return res.json(response);
+  } catch (e) {
+    debugBase(e.message);
+    return res.json({ status: 'error', errMsg: e.message });
   }
 });
 
