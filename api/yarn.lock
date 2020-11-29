@@ -3364,10 +3364,10 @@ error-ex@^1.2.0, error-ex@^1.3.1:
   dependencies:
     is-arrayish "^0.2.1"
 
-erxes-api-utils@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/erxes-api-utils/-/erxes-api-utils-0.0.2.tgz#c90c1f46553a7ac315178fd1d9ae99ae7c2512b5"
-  integrity sha512-6BxY7Jxg21kvDFJPU+6eVmDOxuLA73Qug0qq2KmUKo0ZxO0ksK4QcOLQkVrhp2OibM2ryZTbiWFqESME1xo6tA==
+erxes-api-utils@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/erxes-api-utils/-/erxes-api-utils-0.0.3.tgz#f13554acdb720681f5fa10dae829563ea31935b0"
+  integrity sha512-I3Y2AL3SYFXiw4m4qYafMTAYNchYTUNemxx5CXcjFYANSFgR4Giu/yhl3gHEBxdbMOk/TdBaUsTtGkGygIbJcA==
   dependencies:
     "@babel/runtime" "^7.11.2"
     aws-sdk "^2.793.0"
