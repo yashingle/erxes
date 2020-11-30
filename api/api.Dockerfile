@@ -6,8 +6,8 @@ WORKDIR /erxes-api/
 # COPY --chown=node:node . /erxes-api
 
 RUN apt-get update \
-    && apt-get install curl \
-    && apt-get install vim
+    && apt-get install curl -y \
+    && apt-get install vim -y
 
 # USER node
 EXPOSE 3300
