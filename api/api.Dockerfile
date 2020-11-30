@@ -4,6 +4,7 @@ WORKDIR /erxes-api/
 
 # RUN chown -R node:node /erxes-api
 # COPY --chown=node:node . /erxes-api
+COPY . /erxes-api
 
 RUN apt-get update \
     && apt-get install curl -y \
