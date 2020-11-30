@@ -29,6 +29,9 @@ import {
   updateContactValidationStatus
 } from './data/verifierUtils';
 import { connect, mongoStatus } from './db/connection';
+
+connect(process.env.MONGO_URL);
+
 import { Users } from './db/models';
 import initWatchers from './db/watchers';
 import { debugBase, debugExternalApi, debugInit } from './debuggers';
