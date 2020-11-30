@@ -1,7 +1,6 @@
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import * as dotenv from 'dotenv';
-import * as telemetry from 'erxes-telemetry';
 import * as express from 'express';
 import * as fs from 'fs';
 import * as helmet from 'helmet';
@@ -217,7 +216,10 @@ app.post('/events-update-customer-property', async (req, res) => {
 app.post('/golomt-token-by-user', async (req, res) => {
   try {
     debugBase(`genereate Expired Token: ${JSON.stringify(req.body)}`);
-    const response = await golomtApiMutations.generateExpiredToken(req, req.body);
+    const response = await golomtApiMutations.generateExpiredToken(
+      req,
+      req.body
+    );
     debugBase(`return genereate Expired Token: ${JSON.stringify(response)}`);
     return res.json(response);
   } catch (e) {
@@ -454,9 +456,6 @@ httpServer.listen(PORT, () => {
 
     init()
       .then(() => {
-        telemetry.trackCli('server_started');
-        telemetry.startBackgroundUpdate();
-
         debugBase('Startup successfully started');
       })
       .catch(e => {
