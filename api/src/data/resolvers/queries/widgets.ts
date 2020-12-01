@@ -13,7 +13,6 @@ import Messages from '../../../db/models/ConversationMessages';
 import { IBrowserInfo } from '../../../db/models/Customers';
 import { IIntegrationDocument } from '../../../db/models/definitions/integrations';
 import { registerOnboardHistory } from '../../utils';
-import { getOrCreateEngageMessage } from '../../widgetUtils';
 
 export const isMessengerOnline = async (integration: IIntegrationDocument) => {
   if (!integration.messengerData) {
@@ -214,11 +213,8 @@ export default {
 
   async widgetsGetEngageMessage(
     _root,
-    {
-      customerId,
-      browserInfo
-    }: { customerId: string; browserInfo: IBrowserInfo }
+    {}: { customerId: string; browserInfo: IBrowserInfo }
   ) {
-    return await getOrCreateEngageMessage(customerId, browserInfo);
+    return [];
   }
 };
