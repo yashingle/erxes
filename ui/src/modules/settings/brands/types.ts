@@ -7,7 +7,7 @@ export interface IBrand {
   name?: string;
   createdAt: string;
   description?: string;
-  emailConfig: { type: string; template: string };
+  emailConfig: { type: string; template: string; fromEmail: string };
 }
 
 export interface IChooseBrand {

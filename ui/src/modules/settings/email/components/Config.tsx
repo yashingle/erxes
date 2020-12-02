@@ -1,4 +1,9 @@
 import Button from 'modules/common/components/Button';
+import {
+  ControlLabel,
+  FormControl,
+  FormGroup
+} from 'modules/common/components/form';
 import Form from 'modules/common/components/form/Form';
 import Info from 'modules/common/components/Info';
 import { Tabs, TabTitle } from 'modules/common/components/tabs';
@@ -46,23 +51,15 @@ class Config extends React.Component<Props, State> {
     this.setState({ template: e.editor.getData() });
   };
 
-  generateDoc = (values: {
-    _id?: string;
-    currentTab: string;
-    template: string;
-  }) => {
-    const { brand } = this.props;
-    const finalValues = values;
-
-    if (brand) {
-      finalValues._id = brand._id;
-    }
+  generateDoc = (values: { fromEmail: string }) => {
+    const { currentTab, template } = this.state;
 
     return {
-      _id: finalValues._id,
+      _id: this.props.brand._id,
       emailConfig: {
-        type: this.state.currentTab,
-        template: this.state.template
+        type: currentTab,
+        template,
+        fromEmail: values.fromEmail
       }
     };
   };
@@ -93,7 +90,7 @@ class Config extends React.Component<Props, State> {
   }
 
   renderContent = (formProps: IFormProps) => {
-    const { renderButton, closeModal } = this.props;
+    const { renderButton, closeModal, brand } = this.props;
     const { currentTab } = this.state;
     const { values, isSubmitted } = formProps;
 
@@ -102,6 +99,14 @@ class Config extends React.Component<Props, State> {
 
     return (
       <>
+        <FormGroup>
+          <ControlLabel>From email</ControlLabel>
+          <FormControl
+            {...formProps}
+            name="fromEmail"
+            defaultValue={brand.emailConfig.fromEmail}
+          />
+        </FormGroup>
         <Tabs full={true}>
           <TabTitle
             className={currentTab === 'simple' ? 'active' : ''}

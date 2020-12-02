@@ -29,6 +29,13 @@ export const brandEmailConfigSchema = new Schema({
     enum: ['simple', 'custom'],
     label: 'Type'
   }),
+  fromEmail: field({
+    type: String,
+    match: [
+      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,10})+$/,
+      'Please fill a valid email address'
+    ]
+  }),
   template: field({ type: String, label: 'Template' })
 });
 
