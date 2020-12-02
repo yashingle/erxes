@@ -30,7 +30,7 @@ class SignIn extends React.Component<Props> {
             {...formProps}
             name="password"
             type="password"
-            placeholder={__('demo')}
+            placeholder={__('Demo$123')}
             required={true}
           />
         </FormGroup>
