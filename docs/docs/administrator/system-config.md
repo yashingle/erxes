@@ -272,80 +272,20 @@ Erxes app enables you to integrate with developer API and that means we can rece
 
 Read and send messages, manage drafts and attachments, search threads and messages, work with labels, setup push notifications, and manage Gmail settings.
 
-- Create **Google Cloud Platform project**, follow [this](#google) guide to create one
-- Enable Gmail API [here](https://console.cloud.google.com/apis/library)
+Setting up the Gmail is easy with the script we made. You will see gmail-script.sh file in your integrations repo.
 
-![](https://erxes-docs.s3-us-west-2.amazonaws.com/integration/google/google-gmail-1.png)
+First, you need to have [Google Cloud SDK]( https://cloud.google.com/sdk/docs/install) on your computer.
+Now let's make it executable. In your terminal run the following command <br/>
 
-![](https://erxes-docs.s3-us-west-2.amazonaws.com/integration/google/google-gmail-2.png)
+ `chmod +x gmail-setup.sh`
 
-- SideMenu => APIs Services => OAuth Consent screen => Create
+Run  script as follows <br/>
 
-![](https://erxes-docs.s3-us-west-2.amazonaws.com/integration/google/google-gmail-3.png)
+ `./gmail-setup.sh`
 
-- Fill out rest of the form and Click on the Add scope button
+This script basically will do most of the things for you. However there are a few steps you will have to make manually. When you successfully run the script it will show the rest of the steps.
 
-![](https://erxes-docs.s3-us-west-2.amazonaws.com/integration/google/google-gmail-4.png)
-
-- Search for Gmail API and select scopes as below
-
-![](https://erxes-docs.s3-us-west-2.amazonaws.com/integration/google/google-gmail-5.png)
-
-![](https://erxes-docs.s3-us-west-2.amazonaws.com/integration/google/google-gmail-6.png)
-
-- SideMenu => APIs & Services => Credentials => Create credentials => OAuth Client
-
-![](https://erxes-docs.s3-us-west-2.amazonaws.com/integration/google/google-gmail-7.png)
-
-- Select Web application and fill out rest of the form and click on the Create button
-
-![](https://erxes-docs.s3-us-west-2.amazonaws.com/integration/google/google-gmail-8.png)
-
-- You will get your CLIENT_ID, CLIENT_SECRET, We are going to use these in the Erxes App system config later on
-
-![](https://erxes-docs.s3-us-west-2.amazonaws.com/integration/google/google-gmail-9.png)
-
-- Now select your newly created OAuth client and add redirect URI for OAuth2 authorization
-
-![](https://erxes-docs.s3-us-west-2.amazonaws.com/integration/google/google-gmail-10.png)
-
-![](https://erxes-docs.s3-us-west-2.amazonaws.com/integration/google/google-gmail-11.png)
-
-- We also need to enable **Cloud Pub/Sub API** in order to receive our email as **real-time**
-
-![](https://erxes-docs.s3-us-west-2.amazonaws.com/integration/google/google-gmail-13.png)
-
-![](https://erxes-docs.s3-us-west-2.amazonaws.com/integration/google/google-gmail-12.png)
-
-- Navigate to SideMenu => IAM & Admin => IAM
-
-- Click on the Add button and add grant publish right to **gmail-api-push@system.gserviceaccount.com** account
-
-- Select role Pub/Sub Publisher and click on the Save button
-
-![](https://erxes-docs.s3-us-west-2.amazonaws.com/integration/google/google-gmail-14.png)
-
-- Now Let's config our Erxes app
-
-- Navigate to Settings => System configs => General system config
-
-- Add your **CLIENT_ID** to **GOOGLE_CLIENT_ID** and **CLIENT_SECRET** to **GOOGLE_CLIENT_SECRET** then click on the Save button
-
-![](https://erxes-docs.s3-us-west-2.amazonaws.com/integration/google/google-gmail-15.png)
-
-- Final touch, navigate to Settings => System configs => Integrations config
-
-- Enable **USE DEFAULT GMAIL SERVICE**
-
-- Enter your **GOOGLE GMAIL TOPIC**, **GOOGLE GMAIL SUBSCRIPTION NAME** names as single string
-
-![](https://erxes-docs.s3-us-west-2.amazonaws.com/integration/google/google-gmail-16.png)
-
-- Restart the erxes-integrations and verify that corresponding topic, subscriptions created in pub/sub console [here](https://console.cloud.google.com/cloudpubsub/subscription).
-
-Now you are good to create your a Gmail integration
-
-### Facebook
+## Facebook
 
 Erxes app can be integrated with facebook developer API and that means we can receive our Facebook pages' inbox messages directly to our erxes app's inbox. With the help of Facebook developer API we have many more possibilities, like receiving notifications about page comment, page post feed etc. There is an active development process going on this subject.
 
@@ -500,7 +440,8 @@ DAILY_END_POINT="your daily application's end point"
 ```
 
 - `DAILY_API_KEY='######'` Get API key from Daily account Developers tab.
-- `DAILY_END_POINT ='example.daily.co'` is your subdomain name.
+- `DAILY_END_POINT ='https://example.daily.co'` is your subdomain name.
+  - **Note:** You must have `https://` before the url endpoint, and there is **no trailing slash**.
 
 Integrated video chat is used on the Erxes messenger widget. It is assumed that the one conversation can be activated one video call.
 
@@ -859,6 +800,35 @@ When you start erxes-integration repo webhook will automatically created accordi
 ![](https://erxes-docs.s3-us-west-2.amazonaws.com/integration/smooch-twilio-3.png)
 
 6. Go to Setting=> Channel=> Add new channel=> Connect Twilio integration.
+
+### Telnyx SMS
+
+**1. Sign in to [telnyx portal](https://portal.telnyx.com).**
+
+**2. Create an API key.**
+
+With API keys, you can "talk" to the telnyx API.
+![](https://erxes-docs.s3-us-west-2.amazonaws.com/integration/telnyx-api-key.png)
+
+**3. Purchase phone numbers.**
+
+![](https://erxes-docs.s3-us-west-2.amazonaws.com/integration/telnyx-numbers-buy.png)
+
+![](https://erxes-docs.s3-us-west-2.amazonaws.com/integration/telnyx-numbers.png)
+
+**4. Create messaging profiles.**
+
+Messaging profiles let you set configurations like destination countries, webhooks to send or receive messages.
+![](https://erxes-docs.s3-us-west-2.amazonaws.com/integration/telnyx-msg-profile.png)
+
+**5. Setup the API key in integration settings.**
+
+Configure the telnyx API at **"settings > system config > integration config".**
+![](https://erxes-docs.s3-us-west-2.amazonaws.com/integration/integration-telnyx.png)
+
+**6. Create telnyx integrations with purchased phone number & messaging profile.**
+
+![](https://erxes-docs.s3-us-west-2.amazonaws.com/integration/add-telnyx-integration.png)
 
 ## Engage configurations
 

@@ -1,3 +1,4 @@
+import { AppConsumer } from 'appContext';
 import { COLORS } from 'modules/boards/constants';
 import { FlexContent } from 'modules/boards/styles/item';
 import Button from 'modules/common/components/Button';
@@ -25,38 +26,51 @@ type Props = {
   closeModal: () => void;
 };
 
+type FinalProps = {
+  currentUserId: string;
+} & Props;
+
 type State = {
   backgroundColor: string;
   groupId: string;
+  isPrimary: boolean;
 };
 
-class CalendarForm extends React.Component<Props, State> {
-  constructor(props: Props) {
+class CalendarForm extends React.Component<FinalProps, State> {
+  constructor(props: FinalProps) {
     super(props);
 
-    const calendar = this.props.calendar || ({} as ICalendar);
-
     this.state = {
-      backgroundColor: calendar.color || colors.colorPrimaryDark,
-      groupId: calendar.groupId || ''
+      backgroundColor: colors.colorPrimaryDark,
+      groupId: '',
+      isPrimary: false
     };
   }
 
-  collectValues = items => {
-    return items.map(item => item.value);
+  componentWillReceiveProps(nextProps) {
+    const { show, calendar } = nextProps;
+
+    if (show && calendar && calendar._id) {
+      this.setState({
+        backgroundColor: calendar.color,
+        groupId: calendar.groupId,
+        isPrimary: calendar.isPrimary || false
+      });
+    }
+  }
+
+  onChangeIsPrimary = e => {
+    const isChecked = (e.currentTarget as HTMLInputElement).checked;
+    this.setState({ isPrimary: isChecked });
   };
 
   onColorChange = e => {
     this.setState({ backgroundColor: e.hex });
   };
 
-  generateDoc = (values: {
-    _id?: string;
-    name: string;
-    visibility: string;
-  }) => {
+  generateDoc = (values: { _id?: string }) => {
     const { calendar } = this.props;
-    const { backgroundColor, groupId } = this.state;
+    const { backgroundColor, isPrimary, groupId } = this.state;
     const finalValues = values;
 
     if (calendar) {
@@ -66,6 +80,7 @@ class CalendarForm extends React.Component<Props, State> {
     return {
       ...finalValues,
       groupId,
+      isPrimary,
       color: backgroundColor
     };
   };
@@ -78,7 +93,7 @@ class CalendarForm extends React.Component<Props, State> {
   };
 
   renderGroups() {
-    const { groups } = this.props;
+    const { groups, calendar } = this.props;
 
     const onChange = item => this.setState({ groupId: item.value });
 
@@ -87,7 +102,7 @@ class CalendarForm extends React.Component<Props, State> {
         <ControlLabel required={true}>Group</ControlLabel>
         <Select
           placeholder={__('Choose a group')}
-          value={this.state.groupId}
+          value={this.state.groupId || (calendar && calendar.groupId)}
           options={this.renderOptions(groups)}
           onChange={onChange}
           clearable={false}
@@ -97,10 +112,11 @@ class CalendarForm extends React.Component<Props, State> {
   }
 
   renderContent = (formProps: IFormProps) => {
-    const { calendar, renderButton, closeModal } = this.props;
+    const { calendar, renderButton, closeModal, currentUserId } = this.props;
     const { values, isSubmitted } = formProps;
-    const object = calendar || ({} as ICalendar);
     const calendarName = 'calendar';
+    const showPrimary =
+      !calendar || (calendar && currentUserId === calendar.userId);
 
     const popoverBottom = (
       <Popover id="color-picker">
@@ -123,17 +139,6 @@ class CalendarForm extends React.Component<Props, State> {
         </Modal.Header>
 
         <Modal.Body>
-          <FormGroup>
-            <ControlLabel required={true}>Name</ControlLabel>
-            <FormControl
-              {...formProps}
-              name="name"
-              defaultValue={object.name}
-              autoFocus={true}
-              required={true}
-            />
-          </FormGroup>
-
           <FlexContent>
             <FormGroup>
               <ControlLabel>Background</ControlLabel>
@@ -155,6 +160,20 @@ class CalendarForm extends React.Component<Props, State> {
           </FlexContent>
 
           {this.renderGroups()}
+
+          {showPrimary && (
+            <FormGroup>
+              <ControlLabel>Is primary</ControlLabel>
+
+              <FormControl
+                {...formProps}
+                name="isPrimary"
+                defaultChecked={this.state.isPrimary}
+                componentClass="checkbox"
+                onChange={this.onChangeIsPrimary}
+              />
+            </FormGroup>
+          )}
 
           <Modal.Footer>
             <Button
@@ -194,7 +213,6 @@ class CalendarForm extends React.Component<Props, State> {
         onHide={closeModal}
         enforceFocus={false}
         animation={false}
-        size="lg"
       >
         <Form renderContent={this.renderContent} />
       </Modal>
@@ -202,4 +220,13 @@ class CalendarForm extends React.Component<Props, State> {
   }
 }
 
-export default CalendarForm;
+export default (props: Props) => (
+  <AppConsumer>
+    {({ currentUser }) => (
+      <CalendarForm
+        {...props}
+        currentUserId={(currentUser && currentUser._id) || ''}
+      />
+    )}
+  </AppConsumer>
+);

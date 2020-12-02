@@ -3,7 +3,9 @@ import * as dotenv from 'dotenv';
 import * as formidable from 'formidable';
 import * as Nylas from 'nylas';
 import { debugNylas, debugRequest } from '../debuggers';
+import { revokeToken } from '../gmail/api';
 import { Accounts, Integrations } from '../models';
+import { enableOrDisableAccount } from './api';
 import { connectProviderToNylas } from './auth';
 import {
   createNylasIntegration,
@@ -17,7 +19,8 @@ import {
   nylasGetCalendarOrEvent,
   nylasGetCalendars,
   nylasSendEmail,
-  nylasUpdateEvent
+  nylasUpdateEvent,
+  updateCalendar
 } from './handleController';
 import loginMiddleware from './loginMiddleware';
 import { NylasCalendars, NylasEvent } from './models';
@@ -187,7 +190,11 @@ export const initNylas = async app => {
         await nylasGetAllEvents(account);
       }
 
-      return res.json({ status: 'ok', accountId: account._id });
+      return res.json({
+        status: 'ok',
+        accountId: account._id,
+        email: account.email
+      });
     } catch (e) {
       return next(e);
     }
@@ -197,7 +204,11 @@ export const initNylas = async app => {
     const { accountId } = req.body;
 
     try {
-      const { nylasAccountId } = await Accounts.findOne({ _id: accountId });
+      const {
+        email,
+        nylasAccountId,
+        googleAccessToken
+      } = await Accounts.findOne({ _id: accountId });
 
       const calendars = await NylasCalendars.find({
         accountUid: nylasAccountId
@@ -210,6 +221,9 @@ export const initNylas = async app => {
       await Accounts.deleteOne({ _id: accountId });
       await NylasCalendars.deleteMany({ accountUid: nylasAccountId });
       await NylasEvent.deleteMany({ providerCalendarId: { $in: calendarIds } });
+
+      await revokeToken(email, googleAccessToken);
+      await enableOrDisableAccount(nylasAccountId, false);
     } catch (e) {
       return next(e);
     }
@@ -242,7 +256,7 @@ export const initNylas = async app => {
   });
 
   app.get('/nylas/get-calendars', async (req, res, next) => {
-    const { accountId } = req.query;
+    const { accountId, show } = req.query;
 
     try {
       const account = await Accounts.findOne({ _id: accountId });
@@ -255,7 +269,13 @@ export const initNylas = async app => {
 
       debugNylas(`Get calendars with accountUid: $${accountUid}`);
 
-      const calendars = await NylasCalendars.find({ accountUid });
+      const params: { accountUid: string; show?: boolean } = { accountUid };
+
+      if (show) {
+        params.show = true;
+      }
+
+      const calendars = await NylasCalendars.find(params);
 
       if (!calendars) {
         throw new Error('Calendars not found');
@@ -344,6 +364,18 @@ export const initNylas = async app => {
         eventId: _id,
         doc
       });
+
+      return res.json(response);
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  app.post('/nylas/edit-calendar', async (req, res, next) => {
+    debugRequest(debugNylas, req);
+
+    try {
+      const response = await updateCalendar(req.body);
 
       return res.json(response);
     } catch (e) {

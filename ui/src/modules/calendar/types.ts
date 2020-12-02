@@ -6,6 +6,8 @@ export interface ICalendar {
   description?: string;
   readOnly: boolean;
   providerCalendarId: string;
+  show?: boolean;
+  color?: string;
 }
 
 export interface IEvent {
@@ -37,4 +39,27 @@ export interface IEvent {
   status: string;
   providerCalendarId: string;
   providerEventId: string;
+  color: string;
+}
+
+export interface INylasCalendar {
+  _id: string;
+  providerCalendarId: string;
+  accountUid: string;
+  name: string;
+  description: string;
+  readOnly: boolean;
+  color: string;
+  customName: string;
+}
+
+export interface IAccount {
+  _id: string;
+  name: string;
+  color: string;
+  accountId: string;
+  userId: string;
+  isPrimary: boolean;
+
+  calendars: INylasCalendar[];
 }

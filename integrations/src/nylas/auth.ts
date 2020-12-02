@@ -29,7 +29,12 @@ const connectProviderToNylas = async (uid: string, integrationId?: string) => {
     throw new Error(`Refresh token not found ${uid}`);
   }
 
-  const [email, refreshToken, kind] = providerCredential.split(',');
+  const [
+    email,
+    refreshToken,
+    kind,
+    googleAccessToken
+  ] = providerCredential.split(',');
 
   if (integrationId) {
     const isEmailDuplicated = await checkEmailDuplication(email, kind);
@@ -66,22 +71,31 @@ const connectProviderToNylas = async (uid: string, integrationId?: string) => {
 
     await memoryStorage().removeKey(crendentialKey);
 
+    const nylasAccountId = account_id;
+    const status = 'paid';
+
+    if (billing_state === 'cancelled') {
+      await enableOrDisableAccount(nylasAccountId, true);
+    }
+
     if (integrationId) {
       await createIntegration({
         kind,
         email,
         integrationId,
         nylasToken: access_token,
-        nylasAccountId: account_id,
-        status: billing_state
+        nylasAccountId,
+        status,
+        googleAccessToken
       });
     } else {
       const newAccount = await Accounts.create({
         kind,
         email,
+        googleAccessToken,
         nylasToken: access_token,
-        nylasAccountId: account_id,
-        nylasBillingState: 'paid'
+        nylasAccountId,
+        nylasBillingState: status
       });
 
       return { account: newAccount };
@@ -321,7 +335,8 @@ const createIntegration = async ({
   nylasAccountId,
   nylasToken,
   status,
-  kind
+  kind,
+  googleAccessToken
 }: {
   email?: string;
   integrationId: string;
@@ -329,6 +344,7 @@ const createIntegration = async ({
   nylasToken: string;
   status: string;
   kind: string;
+  googleAccessToken?: string;
 }) => {
   if (status === 'cancelled') {
     await enableOrDisableAccount(nylasAccountId, true);
@@ -338,6 +354,7 @@ const createIntegration = async ({
     ...(email ? { email } : {}),
     kind,
     erxesApiId: integrationId,
+    googleAccessToken,
     nylasToken,
     nylasAccountId,
     nylasBillingState: 'paid'

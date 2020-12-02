@@ -1,8 +1,11 @@
 import { Model, model } from 'mongoose';
 import {
+  calendarBoardSchema,
   calendarGroupSchema,
   calendarSchema,
   ICalendar,
+  ICalendarBoard,
+  ICalendarBoardDocument,
   ICalendarDocument,
   ICalendarGroup,
   ICalendarGroupDocument
@@ -14,12 +17,22 @@ export interface ICalendarModel extends Model<ICalendarDocument> {
   removeCalendar(_id: string): Promise<{ n: number; ok: number }>;
 }
 
+const setPrimaryCalendar = async (doc: ICalendar) => {
+  const { isPrimary, userId } = doc;
+
+  if (isPrimary && userId) {
+    await Calendars.updateMany({ userId }, { $set: { isPrimary: false } });
+  }
+};
+
 export const loadCalendarClass = () => {
   class Calendar {
     /**
      * Create a calendar
      */
     public static async createCalendar(doc: ICalendar) {
+      await setPrimaryCalendar(doc);
+
       const calendar = await Calendars.create(doc);
 
       return calendar;
@@ -29,6 +42,12 @@ export const loadCalendarClass = () => {
      * Update Calendar
      */
     public static async updateCalendar(_id: string, doc: ICalendar) {
+      const calendar = await Calendars.findOne({ _id });
+
+      if (calendar) {
+        await setPrimaryCalendar(calendar);
+      }
+
       await Calendars.updateOne({ _id }, { $set: doc });
 
       return Calendars.findOne({ _id });
@@ -88,9 +107,54 @@ export const loadCalendarGroupClass = () => {
 
   return calendarGroupSchema;
 };
+export interface ICalendarBoardModel extends Model<ICalendarBoardDocument> {
+  createCalendarBoard(doc: ICalendarBoard): Promise<ICalendarBoardDocument>;
+  updateCalendarBoard(
+    _id: string,
+    doc: ICalendarBoard
+  ): Promise<ICalendarBoardDocument>;
+  removeCalendarBoard(_id: string): Promise<{ n: number; ok: number }>;
+}
+
+export const loadCalendarBoardClass = () => {
+  class CalendarBoard {
+    /**
+     * Create a board
+     */
+    public static async createCalendarBoard(doc: ICalendarBoard) {
+      const board = await CalendarBoards.create(doc);
+
+      return board;
+    }
+
+    /**
+     * Update board
+     */
+    public static async updateCalendarBoard(_id: string, doc: ICalendarBoard) {
+      await CalendarBoards.updateOne({ _id }, { $set: doc });
+
+      return CalendarBoards.findOne({ _id });
+    }
+
+    public static async removeCalendarBoard(_id: string) {
+      const count = await CalendarGroups.countDocuments({ boardId: _id });
+
+      if (count > 0) {
+        throw new Error("Can't remove a calendar board");
+      }
+
+      return CalendarBoards.deleteOne({ _id });
+    }
+  }
+
+  calendarBoardSchema.loadClass(CalendarBoard);
+
+  return calendarBoardSchema;
+};
 
 loadCalendarClass();
 loadCalendarGroupClass();
+loadCalendarBoardClass();
 
 // tslint:disable-next-line
 
@@ -104,4 +168,9 @@ const CalendarGroups = model<ICalendarGroupDocument, ICalendarGroupModel>(
   calendarGroupSchema
 );
 
-export { Calendars, CalendarGroups };
+const CalendarBoards = model<ICalendarBoardDocument, ICalendarBoardModel>(
+  'calendar_boards',
+  calendarBoardSchema
+);
+
+export { Calendars, CalendarGroups, CalendarBoards };
