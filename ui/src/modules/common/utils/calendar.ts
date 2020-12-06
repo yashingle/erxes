@@ -1,60 +1,15 @@
-import dayjs, { Dayjs } from 'dayjs';
-import { __ } from '.';
-import { IDateColumn } from '../types';
+import { calendar } from 'erxes-ui-utils';
 
-const MONTHS = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December'
-];
+export const monthColumns = calendar.monthColumns;
 
-/**
- * Get columns of months
- * @param date - current date
- * @param range - range of months to get
- */
-export const monthColumns = (date: Dayjs, range: number): [IDateColumn] => {
-  let currentDate = date.clone(); // deep copy prevent mutability
+export const getCurrentDate = calendar.getCurrentDate;
 
-  const months: any = [getMonthYear(currentDate)];
+export const nextMonth = calendar.nextMonth;
 
-  for (let i = 0; i < range; i++) {
-    currentDate = nextMonth(currentDate);
-    months.push(getMonthYear(currentDate));
-  }
+export const previousMonth = calendar.previousMonth;
 
-  return months;
-};
+export const getMonthTitle = calendar.getMonthTitle;
 
-export const getCurrentDate = (): Dayjs => dayjs();
+export const getFullTitle = calendar.getFullTitle;
 
-export const nextMonth = (date: Dayjs): Dayjs => {
-  return date.add(1, 'month');
-};
-
-export const previousMonth = (date: Dayjs): Dayjs => {
-  return date.subtract(1, 'month');
-};
-
-export const getMonthTitle = (month: number): string => __(MONTHS[month]);
-
-export const getFullTitle = (date: IDateColumn): string => {
-  const { month, year } = date;
-  return __(MONTHS[month]) + ' - ' + year;
-};
-
-export const getMonthYear = (date: Dayjs): { month: number; year: number } => {
-  const month = date.month();
-  const year = date.year();
-
-  return { month, year };
-};
+export const getMonthYear = calendar.getMonthYear;
