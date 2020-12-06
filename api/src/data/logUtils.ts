@@ -1478,7 +1478,7 @@ const putLog = async (params: IFinalLogParams, user: IUserDocument) => {
   // mutation after wrapper
   if (callAfterMutations) {
     const { type, action } = params;
-    if (callAfterMutations[type][action].length) {
+    if (callAfterMutations[type] && callAfterMutations[type][action].length) {
       for (const handler of callAfterMutations[type][action]) {
         await handler({}, params, {
           constants: allConstants,
