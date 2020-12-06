@@ -1,6 +1,6 @@
+import { ControlLabel as CommonControlLabel } from 'erxes-ui-utils'
 import { __ } from 'modules/common/utils';
 import React from 'react';
-import { Label } from './styles';
 
 type Props = {
   children: React.ReactNode | string;
@@ -11,7 +11,7 @@ type Props = {
 };
 
 function ControlLabel(props: Props) {
-  const { children, ignoreTrans, required, uppercase = true } = props;
+  const { children, ignoreTrans } = props;
 
   let content = children;
 
@@ -20,10 +20,9 @@ function ControlLabel(props: Props) {
   }
 
   return (
-    <Label uppercase={uppercase}>
+    <CommonControlLabel {...props}>
       {content}
-      {required && <span> *</span>}
-    </Label>
+    </CommonControlLabel>
   );
 }
 

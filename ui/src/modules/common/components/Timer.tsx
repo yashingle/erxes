@@ -25,7 +25,7 @@ const Container = styledTS<{ isComplete: boolean }>(styled.div)`
         transparent
       );
     `};
-  
+
 
   button {
     width: 39px;
