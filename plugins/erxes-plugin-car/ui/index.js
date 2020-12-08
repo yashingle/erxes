@@ -1,16 +1,11 @@
-import List from './containers/List';
-import Form from './containers/Form';
+import List from './containers/CarsList';
 
 export default () => ({
     routes: [
         {
             path: '/list',
             component: List
-        },
-        {
-            path: '/form',
-            component: Form
-        },
+        }
     ],
     menu: {
         label: 'Plugin Car',
