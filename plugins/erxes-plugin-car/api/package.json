@@ -1,7 +1,8 @@
 {
   "name": "erxes-npm-package",
   "version": "0.0.2",
-  "main": "ui/index.js",
+  "license": "SEE LICENSE IN LICENSE",
+  "main": "api/index.js",
   "dependencies": {
     "erxes-api-utils": "^0.0.2"
   }
