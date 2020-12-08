@@ -57,7 +57,8 @@ const renderRoutes = currentUser => {
   };
 
   if (currentUser) {
-    const pluginModules = require('./plugins').default;
+    const pluginModules = require('./plugins').default || {};
+
     const plugins: any = [];
     const pluginRoutes: any = [];
 

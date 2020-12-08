@@ -1,5 +1,5 @@
-import { core } from 'erxes-ui-utils'
 import { getEnv } from 'apolloClient';
+import { core } from 'erxes-ui-utils';
 import T from 'i18n-react';
 import { IUserDoc } from 'modules/auth/types';
 import Alert from './Alert';
