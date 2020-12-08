@@ -1,3 +1,4 @@
+import { cleanIntegrationKind as _cleanIntegrationKind } from 'erxes-ui-utils'
 import gql from 'graphql-tag';
 import juice from 'juice';
 import { generatePaginationParams } from 'modules/common/utils/router';
@@ -59,18 +60,7 @@ export const formatStr = (emailString?: string) => {
   return emailString ? emailString.split(/[ ,]+/) : [];
 };
 
-export const cleanIntegrationKind = (name: string) => {
-  if (name.includes('nylas')) {
-    name = name.replace('nylas-', '');
-  }
-  if (name.includes('smooch')) {
-    name = name.replace('smooch-', '');
-  }
-  if (name === 'lead') {
-    name = 'popups';
-  }
-  return name;
-};
+export const cleanIntegrationKind = _cleanIntegrationKind;
 
 export const formatObj = (emailArray: IEmail[]) => {
   if (!emailArray || emailArray.length === 0) {
@@ -113,21 +103,19 @@ export const generateForwardMailContent = (params: Params) => {
     <br/>
     <b>To</b>: ${formatObj(to)}
     <br/>
-    ${
-      cc.length > 0
-        ? `
+    ${cc.length > 0
+      ? `
       <b>Cc</b>: ${formatObj(cc)}
       <br/>
       `
-        : ''
+      : ''
     }
-    ${
-      bcc.length > 0
-        ? `
+    ${bcc.length > 0
+      ? `
       <b>Bcc</b>: ${formatObj(bcc)}
       <br/>
       `
-        : ''
+      : ''
     }
     <b>Subject</b>: ${subject}
     ${body}
