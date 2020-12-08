@@ -5277,29 +5277,34 @@ erxes-icon@^1.2.1:
   resolved "https://registry.yarnpkg.com/erxes-icon/-/erxes-icon-1.2.1.tgz#1df585ff385146dfffd0261398de474eed39c2c6"
   integrity sha512-qk1yavXsBCub9/XBaiTgg9OCouRfZnDxWIqtfi/tVr51zFYgZuGm5GkswglIhF5FCayJ+XtOFqf/Z/9UUc676g==
 
-erxes-ui-utils@0.1.22:
-  version "0.1.22"
-  resolved "https://registry.yarnpkg.com/erxes-ui-utils/-/erxes-ui-utils-0.1.22.tgz#dcf377cc4a8d3c2384a6cbeae029dcd6cd17f18d"
-  integrity sha512-l2q88NAewLWJ1tlf7MA3ulk7oLcjTIJBkU9QtQHzCCgMKkrT0TXZ9Iw5mV5gf+gw+ZGdsVNZEdthM0byrNonzA==
+erxes-ui-utils@^0.1.23:
+  version "0.1.23"
+  resolved "https://registry.yarnpkg.com/erxes-ui-utils/-/erxes-ui-utils-0.1.23.tgz#8827f6dba1e4daf7de46c2c145e7ed4c394ebb1c"
+  integrity sha512-eGKr+ZGFuOv2bKbxZPK/GYtDcwsFsuQWqMaskljoBGj/62c6irvc2guls7iwqXq+trt/LNzDBt89Uw+DWQmBdw==
   dependencies:
     "@nateradebaugh/react-datetime" "4.0.0-rc.10"
     "@types/node" "^14.14.6"
     "@types/react" "^16.4.13"
     "@types/react-dom" "^16.9.9"
     "@types/react-router-dom" "^5.1.3"
+    apollo-client "^2.6.4"
     awesome-typescript-loader "^5.2.0"
     color "^3.1.3"
     css-loader "^0.27.3"
     date-fns "1.29.0"
     dayjs "^1.8.15"
     dotenv-webpack "^1.7.0"
+    graphql "^0.12.3"
+    graphql-tag "^2.6.1"
     query-string "^5.0.0"
     react "16.11.0"
+    react-apollo "^3.1.3"
     react-bootstrap "^1.0.0-beta.14"
     react-dom "16.11.0"
     react-router-dom "^5.1.2"
     react-scripts "3.0.1"
     react-toggle "^4.1.1"
+    react-transition-group "^2.5.1"
     styled-components "3.4.10"
     styled-components-ts "^0.0.14"
     tslint "^6.1.3"
