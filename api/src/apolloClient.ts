@@ -7,8 +7,8 @@ import resolvers from './data/resolvers';
 import * as typeDefDetails from './data/schema';
 import { Conversations, Customers, Users } from './db/models';
 import memoryStorage from './inmemoryStorage';
-import { graphqlPubsub } from './pubsub';
 import { extendViaPlugins } from './pluginUtils';
+import { graphqlPubsub } from './pubsub';
 
 // load environment variables
 dotenv.config();

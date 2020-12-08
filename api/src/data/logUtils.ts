@@ -51,8 +51,8 @@ import {
 } from '../db/models/index';
 import memoryStorage from '../inmemoryStorage';
 import messageBroker from '../messageBroker';
-import { graphqlPubsub } from '../pubsub';
 import { allConstants, allModels, callAfterMutations } from '../pluginUtils';
+import { graphqlPubsub } from '../pubsub';
 import { MODULE_NAMES, RABBITMQ_QUEUES } from './constants';
 import {
   getSubServiceDomain,

@@ -20,8 +20,8 @@ import insightExports from './data/modules/insights/insightExports';
 import {
   authCookieOptions,
   deleteFile,
-  getSubServiceDomain,
   getEnv,
+  getSubServiceDomain,
   handleUnsubscription,
   readFileRequest,
   registerOnboardHistory
