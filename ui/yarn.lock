@@ -5277,7 +5277,7 @@ erxes-icon@^1.2.1:
   resolved "https://registry.yarnpkg.com/erxes-icon/-/erxes-icon-1.2.1.tgz#1df585ff385146dfffd0261398de474eed39c2c6"
   integrity sha512-qk1yavXsBCub9/XBaiTgg9OCouRfZnDxWIqtfi/tVr51zFYgZuGm5GkswglIhF5FCayJ+XtOFqf/Z/9UUc676g==
 
-erxes-ui-utils@0.1.23:
+erxes-ui-utils@^0.1.23:
   version "0.1.23"
   resolved "https://registry.yarnpkg.com/erxes-ui-utils/-/erxes-ui-utils-0.1.23.tgz#8827f6dba1e4daf7de46c2c145e7ed4c394ebb1c"
   integrity sha512-eGKr+ZGFuOv2bKbxZPK/GYtDcwsFsuQWqMaskljoBGj/62c6irvc2guls7iwqXq+trt/LNzDBt89Uw+DWQmBdw==
