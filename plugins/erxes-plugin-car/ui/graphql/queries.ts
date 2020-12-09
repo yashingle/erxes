@@ -1,36 +1,19 @@
-import {
-  conformityQueryFieldDefs,
-  conformityQueryFields
-} from 'modules/conformity/graphql/queries';
-
 const carFields = `
   _id
-  createdAt
-  modifiedAt
-  ownerId
-  mergedIds
-  description
-  doNotDisturb
-  customFieldsData
   plateNumber
-  vinNumber
   categoryId
-  category {
+  category{
     code
     name
   }
-  colorCode
-  bodyType
-  fuelType
-  gearBox
-  vintageYear
-  importYear
-  customFieldsData
-  tagIds
-  getTags {
+  customers{
     _id
-    name
-    colorCode
+  }
+  owner {
+    email
+  }
+  getTags{
+    _id
   }
 `;
 
@@ -45,7 +28,6 @@ const listParamsDef = `
   $brand: String
   $sortField: String
   $sortDirection: Int
-  ${conformityQueryFields}
 `;
 
 const listParamsValue = `
@@ -59,7 +41,6 @@ const listParamsValue = `
   brand: $brand
   sortField: $sortField
   sortDirection: $sortDirection
-  ${conformityQueryFieldDefs}
 `;
 
 export const cars = `

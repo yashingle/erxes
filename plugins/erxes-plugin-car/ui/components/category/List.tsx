@@ -1,17 +1,9 @@
-import Button from 'modules/common/components/Button';
-import DataWithLoader from 'modules/common/components/DataWithLoader';
-import Icon from 'modules/common/components/Icon';
-import ModalTrigger from 'modules/common/components/ModalTrigger';
-import Tip from 'modules/common/components/Tip';
-import { TopHeader } from 'modules/common/styles/main';
-import { __, router } from 'modules/common/utils';
-import Sidebar from 'modules/layout/components/Sidebar';
-import Wrapper from 'modules/layout/components/Wrapper';
+import { Wrapper, Button, DataWithLoader, Icon, Tip, ModalTrigger, router, Sidebar } from 'erxes-ui-utils';
 import { ActionButtons, SidebarListItem } from 'modules/settings/styles';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import CategoryForm from '../../containers/carCategory/CategoryForm';
 import { ICarCategory } from '../../types';
+
 
 const { Section } = Wrapper.Sidebar;
 
@@ -26,54 +18,9 @@ interface IProps {
 }
 
 class List extends React.Component<IProps> {
-  renderFormTrigger(trigger: React.ReactNode, category?: ICarCategory) {
-    const content = props => (
-      <CategoryForm
-        {...props}
-        category={category}
-        categories={this.props.carCategories}
-      />
-    );
-
-    return (
-      <ModalTrigger title="Add category" trigger={trigger} content={content} />
-    );
-  }
-
   clearCategoryFilter = () => {
     router.setParams(this.props.history, { categoryId: null });
   };
-
-  isActive = (id: string) => {
-    const { queryParams } = this.props;
-    const currentGroup = queryParams.categoryId || '';
-
-    return currentGroup === id;
-  };
-
-  renderEditAction(category: ICarCategory) {
-    const trigger = (
-      <Button btnStyle="link">
-        <Tip text={__('Edit')} placement="bottom">
-          <Icon icon="edit" />
-        </Tip>
-      </Button>
-    );
-
-    return this.renderFormTrigger(trigger, category);
-  }
-
-  renderRemoveAction(category: ICarCategory) {
-    const { remove } = this.props;
-
-    return (
-      <Button btnStyle="link" onClick={remove.bind(null, category._id)}>
-        <Tip text={__('Remove')} placement="bottom">
-          <Icon icon="cancel-1" />
-        </Tip>
-      </Button>
-    );
-  }
 
   renderContent() {
     const { carCategories } = this.props;
@@ -94,23 +41,20 @@ class List extends React.Component<IProps> {
       const name = category.isRoot ? (
         `${category.name} (${category.carCount})`
       ) : (
-        <span>
-          {category.name} ({category.carCount})
-        </span>
-      );
+          <span>
+            {category.name} ({category.carCount})
+          </span>
+        );
 
       result.push(
         <SidebarListItem
           key={category._id}
-          isActive={this.isActive(category._id)}
         >
           <Link to={`?categoryId=${category._id}`}>
             {space}
             {name}
           </Link>
           <ActionButtons>
-            {this.renderEditAction(category)}
-            {this.renderRemoveAction(category)}
           </ActionButtons>
         </SidebarListItem>
       );
@@ -133,13 +77,12 @@ class List extends React.Component<IProps> {
 
     return (
       <>
-        <TopHeader>{this.renderFormTrigger(trigger)}</TopHeader>
         <Section.Title>
-          {__('Categories')}
+          {'Categories'}
           <Section.QuickButtons>
             {router.getParam(this.props.history, 'categoryId') && (
               <a href="#cancel" tabIndex={0} onClick={this.clearCategoryFilter}>
-                <Tip text={__('Clear filter')} placement="bottom">
+                <Tip text={'Clear filter'} placement="bottom">
                   <Icon icon="cancel-1" />
                 </Tip>
               </a>

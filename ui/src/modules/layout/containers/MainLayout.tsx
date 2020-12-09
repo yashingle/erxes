@@ -5,7 +5,7 @@ import MainLayout from '../components/MainLayout';
 
 type Props = {
   currentUser?: IUser;
-  plugins?;
+  plugins?: any;
   children: React.ReactNode;
 };
 

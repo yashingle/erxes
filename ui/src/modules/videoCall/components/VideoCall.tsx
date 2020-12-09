@@ -16,10 +16,10 @@ const Control = styled('div')`
 
 const ControlBtn = styledTS<{ disabled?: boolean }>(styled(SimpleButton))`
   float: left;
-  
+
   width: auto;
   height: auto;
-  
+
   padding: 0 10px;
   margin: 0 20px;
   font-size: 13px;
@@ -61,7 +61,7 @@ class VideoCall extends React.Component<
     const owner = { url };
 
     this.callFrame = DailyIframe.createFrame(
-      document.getElementById('call-frame-container'),
+      document.getElementById('call-frame-container') as HTMLElement,
       {}
     );
 

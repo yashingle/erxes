@@ -1,15 +1,17 @@
 import gql from 'graphql-tag';
 import * as compose from 'lodash.flowright';
-import { Alert, confirm, withProps } from 'modules/common/utils';
+import { Alert, confirm, core } from 'erxes-ui-utils';
 import React from 'react';
 import { graphql } from 'react-apollo';
-import List from '../../components/carCategory/CategoryList';
+import List from '../../components/category/List';
 import { mutations, queries } from '../../graphql';
 import {
   CarCategoriesCountQueryResponse,
   CarCategoriesQueryResponse,
   CarCategoryRemoveMutationResponse
 } from '../../types';
+
+const { withProps } = core;
 
 type Props = { history: any; queryParams: any };
 

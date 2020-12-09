@@ -1,6 +1,5 @@
 import { colors, dimensions, SidebarList } from 'erxes-ui-utils';
 import styled from 'styled-components';
-import styledTS from 'styled-components-ts';
 
 const CarsTableWrapper = styled.div`
   td {
