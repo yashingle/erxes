@@ -1,11 +1,13 @@
-import { Wrapper, Button, DataWithLoader, Icon, Tip, ModalTrigger, router, Sidebar } from 'erxes-ui-utils';
+import { Wrapper, Button, DataWithLoader, Icon, Tip, ModalTrigger, router, Sidebar, mainStyles } from 'erxes-ui-utils';
 import { ActionButtons, SidebarListItem } from 'modules/settings/styles';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ICarCategory } from '../../types';
+import CategoryForm from '../../containers/category/Form'
 
 
 const { Section } = Wrapper.Sidebar;
+const { TopHeader } = mainStyles
 
 interface IProps {
   history: any;
@@ -18,9 +20,54 @@ interface IProps {
 }
 
 class List extends React.Component<IProps> {
+  renderFormTrigger(trigger: React.ReactNode, category?: ICarCategory) {
+    const content = props => (
+      <CategoryForm
+        {...props}
+        category={category}
+        categories={this.props.carCategories}
+      />
+    );
+
+    return (
+      <ModalTrigger title="Add category" trigger={trigger} content={content} />
+    );
+  }
+
   clearCategoryFilter = () => {
     router.setParams(this.props.history, { categoryId: null });
   };
+
+  isActive = (id: string) => {
+    const { queryParams } = this.props;
+    const currentGroup = queryParams.categoryId || '';
+
+    return currentGroup === id;
+  };
+
+  renderEditAction(category: ICarCategory) {
+    const trigger = (
+      <Button btnStyle="link">
+        <Tip text={'Edit'} placement="bottom">
+          <Icon icon="edit" />
+        </Tip>
+      </Button>
+    );
+
+    return this.renderFormTrigger(trigger, category);
+  }
+
+  renderRemoveAction(category: ICarCategory) {
+    const { remove } = this.props;
+
+    return (
+      <Button btnStyle="link" onClick={remove.bind(null, category._id)}>
+        <Tip text={'Remove'} placement="bottom">
+          <Icon icon="cancel-1" />
+        </Tip>
+      </Button>
+    );
+  }
 
   renderContent() {
     const { carCategories } = this.props;
@@ -55,6 +102,8 @@ class List extends React.Component<IProps> {
             {name}
           </Link>
           <ActionButtons>
+            {this.renderEditAction(category)}
+            {this.renderRemoveAction(category)}
           </ActionButtons>
         </SidebarListItem>
       );
@@ -77,6 +126,7 @@ class List extends React.Component<IProps> {
 
     return (
       <>
+        <TopHeader>{this.renderFormTrigger(trigger)}</TopHeader>
         <Section.Title>
           {'Categories'}
           <Section.QuickButtons>

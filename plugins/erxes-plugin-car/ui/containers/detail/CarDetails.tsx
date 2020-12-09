@@ -1,20 +1,22 @@
+import { EmptyState, Spinner } from 'erxes-ui-utils';
+import { withProps } from 'erxes-ui-utils/lib/utils/core';
 import gql from 'graphql-tag';
 import * as compose from 'lodash.flowright';
-import { EmptyState, Spinner, core } from 'erxes-ui-utils';
 import React from 'react';
 import { graphql } from 'react-apollo';
 import CarDetails from '../../components/details/CarDetails';
 import { queries } from '../../graphql';
 import { DetailQueryResponse } from '../../types';
 
-const { withProps } = core;
+// const { withProps } = core;
+
 type Props = {
   id: string;
 };
 
 type FinalProps = {
   carDetailQuery: DetailQueryResponse;
-  currentUser: IUser;
+  currentUser: any;
 } & Props;
 
 const CarDetailsContainer = (props: FinalProps) => {
@@ -30,18 +32,10 @@ const CarDetailsContainer = (props: FinalProps) => {
 
   const carDetail = carDetailQuery.carDetail || {};
 
-  const taggerRefetchQueries = [
-    {
-      query: gql(queries.carDetail),
-      variables: { _id: id }
-    }
-  ];
-
   const updatedProps = {
     ...props,
     loading: carDetailQuery.loading,
     car: carDetail,
-    taggerRefetchQueries,
     currentUser
   };
 

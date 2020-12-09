@@ -1,8 +1,11 @@
 import {
-    DataWithLoader, Pagination, Table, Wrapper
+  BarItems, Button, DataWithLoader, FormControl, ModalTrigger, Pagination, router, Table, Wrapper
 } from 'erxes-ui-utils';
 import React from 'react';
+import Dropdown from 'react-bootstrap/Dropdown';
 import { withRouter } from 'react-router-dom';
+import CarForm from '../../containers/CarForm';
+
 import { CarsTableWrapper } from '../../styles';
 import { ICar, IRouterProps } from '../../types';
 import CarRow from './CarRow';
@@ -26,6 +29,8 @@ type State = {
 };
 
 class CarsList extends React.Component<IProps, State> {
+  private timer?: NodeJS.Timer = undefined;
+
   constructor(props) {
     super(props);
 
@@ -39,10 +44,35 @@ class CarsList extends React.Component<IProps, State> {
     toggleAll(cars, 'cars');
   };
 
+  search = e => {
+    if (this.timer) {
+      clearTimeout(this.timer);
+    }
+
+    const { history } = this.props;
+    const searchValue = e.target.value;
+
+    this.setState({ searchValue });
+    this.timer = setTimeout(() => {
+      router.removeParams(history, 'page');
+      router.setParams(history, { searchValue });
+    }, 500);
+  };
+
   moveCursorAtTheEnd = e => {
     const tmpValue = e.target.value;
     e.target.value = '';
     e.target.value = tmpValue;
+  };
+
+  addTrigger = (
+    <Button btnStyle="success" size="small" icon="plus-circle">
+      Add car
+    </Button>
+  );
+
+  carForm = props => {
+    return <CarForm {...props} queryParams={props.queryParams} />;
   };
 
   render() {
@@ -78,6 +108,32 @@ class CarsList extends React.Component<IProps, State> {
       </CarsTableWrapper>
     );
 
+    const actionBarRight = (
+      <BarItems>
+        <FormControl
+          type="text"
+          placeholder={'Type to search'}
+          onChange={this.search}
+          value={this.state.searchValue}
+          autoFocus={true}
+          onFocus={this.moveCursorAtTheEnd}
+        />
+
+        <ModalTrigger
+          title="New car"
+          trigger={this.addTrigger}
+          autoOpenKey="showCarModal"
+          size="lg"
+          content={this.carForm}
+          backDrop="static"
+        />
+      </BarItems>
+    );
+
+    const actionBar = (
+      <Wrapper.ActionBar right={actionBarRight} />
+    );
+
     return (
       <Wrapper
         header={
@@ -86,6 +142,7 @@ class CarsList extends React.Component<IProps, State> {
             queryParams={queryParams}
           />
         }
+        actionBar={actionBar}
         footer={<Pagination count={totalCount} />}
         leftSidebar={
           <Sidebar

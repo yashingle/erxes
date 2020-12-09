@@ -44,7 +44,6 @@ const CarListContainer = (props: FinalProps) => {
   return <CarsList {...updatedProps} />;
 }
 
-console.log(CarListContainer);
 export default compose(
   graphql(
     gql(queries.carsMain),

@@ -199,3 +199,27 @@ export interface IConfigColumn {
 export type DefaultColumnsConfigQueryResponse = {
   fieldsDefaultColumnsConfig: IConfigColumn[];
 } & QueryResponse;
+
+export type IButtonMutateProps = {
+  name?: string;
+  values: any;
+  isSubmitted: boolean;
+  confirmationUpdate?: boolean;
+  callback?: () => void;
+  resetSubmit?: () => void;
+  size?: string;
+  object?: any;
+  text?: string;
+  icon?: string;
+  type?: string;
+  disableLoading?: boolean;
+};
+
+export interface IFormProps {
+  errors: any;
+  values: any;
+  registerChild: (child: React.ReactNode) => void;
+  runValidations?: (callback: any) => void;
+  resetSubmit?: () => void;
+  isSubmitted: boolean;
+}

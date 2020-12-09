@@ -1,5 +1,22 @@
 import { core } from 'erxes-ui-utils';
 
+export const COLORS = [
+  '#01aecc',
+  '#D9E3F0',
+  '#ffffff',
+  '#F47373',
+  '#697689',
+  '#4bbf6b',
+  '#0078bf',
+  '#89609d',
+  '#838c91',
+  '#cd5a91',
+  '#d29034',
+  '#63D2D6',
+  '#F7CE53',
+  '#ff0000',
+  '#000000',
+];
 
 export const CAR_INFO = {
   description: 'Description',

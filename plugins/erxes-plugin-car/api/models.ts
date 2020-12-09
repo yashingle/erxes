@@ -75,9 +75,9 @@ class Car {
   /**
    * Create a car
    */
-  public static async createCar(models, doc, user=null) {
+  public static async createCar(models, doc, user = null) {
     // Checking duplicated fields of car
-    await models.Cars.checkDuplication(doc);
+    await models.Cars.checkDuplication(models, doc);
 
     if (!doc.ownerId && user) {
       doc.ownerId = user._id;
@@ -101,7 +101,7 @@ class Car {
    */
   public static async updateCar(models, _id, doc) {
     // Checking duplicated fields of car
-    await models.Cars.checkDuplication(doc, [_id]);
+    await models.Cars.checkDuplication(models, doc, [_id]);
 
     const searchText = models.Cars.fillSearchText(Object.assign(await models.Cars.getCar(_id), doc));
 
@@ -129,7 +129,7 @@ class Car {
    */
   public static async mergeCars(models, carIds, carFields) {
     // Checking duplicated fields of car
-    await this.checkDuplication(carFields, carIds);
+    await this.checkDuplication(models, carFields, carIds);
 
     let scopeBrandIds: string[] = [];
     let customFieldsData = [];
@@ -204,7 +204,7 @@ class CarCategory {
    * Create a car categorys
    */
   public static async createCarCategory(models, doc) {
-    const parentCategory = await models.CarCategories.findOne({ _id: doc.parentId }).lean();
+    const parentCategory = await doc.parentId ? models.CarCategories.findOne({ _id: doc.parentId }).lean() : undefined;
 
     // Generatingg order
     doc.order = await this.generateOrder(parentCategory, doc);
@@ -216,7 +216,7 @@ class CarCategory {
    * Update Car category
    */
   public static async updateCarCategory(models, _id, doc) {
-    const parentCategory = await models.CarCategories.findOne({ _id: doc.parentId }).lean();
+    const parentCategory = await doc.parentId ? models.CarCategories.findOne({ _id: doc.parentId }).lean() : undefined;
 
     if (parentCategory && parentCategory.parentId === _id) {
       throw new Error('Cannot change category');
@@ -265,7 +265,7 @@ class CarCategory {
    * Generating order
    */
   public static async generateOrder(parentCategory, doc) {
-    const order = parentCategory ? `${parentCategory.order}/${doc.name}${doc.code}` : `${doc.name}${doc.code}`;
+    const order = parentCategory ? `${parentCategory.order}/${doc.code}` : `${doc.code}`;
 
     return order;
   }

@@ -1,4 +1,3 @@
-import { FormControl } from 'erxes-ui-utils';
 import React from 'react';
 import { ICar } from '../../types';
 
@@ -16,8 +15,8 @@ function CarRow({ car, history, isChecked, toggleBulk }: Props) {
 
   return (
     <tr onClick={onTrClick}>
-      <td>{car.plateNumber || '9999'}</td>
-      <td>{car.vinNumber || '0000'}</td>
+      <td>{car.plateNumber}</td>
+      <td>{car.vinNumber}</td>
     </tr>
   );
 }

@@ -1,5 +1,12 @@
+import React from 'react';
 import CarList from './containers/CarsList';
 import CarDetails from './containers/detail/CarDetails'
+
+const details = ({ match }) => {
+  const id = match.params.id;
+
+  return <CarDetails id={id} />;
+};
 
 export default () => ({
   routes: [
@@ -8,8 +15,8 @@ export default () => ({
       component: CarList
     },
     {
-      path: '/details',
-      component: CarDetails
+      path: '/details/:id',
+      component: details
     }
   ],
   menu: {

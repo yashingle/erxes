@@ -15,13 +15,12 @@ class CarDetails extends React.Component<Props> {
 
     const title = car.plateNumber || 'Unknown';
 
-    const breadcrumb = [{ title: 'Cars', link: '/cars' }, { title }];
+    const breadcrumb = [{ title: 'Cars', link: '/erxes-plugin-car/list' }, { title }];
 
     const content = (
-      <>
-      </>
+      <>fdsa</>
     );
-    const rs = (<></>)
+    const rs = (<>rs</>);
 
     return (
       <Wrapper
