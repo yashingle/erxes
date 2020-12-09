@@ -121,10 +121,6 @@ const init = async app => {
   });
 
   app.get('/facebook/get-post', async (req, res) => {
-    debugFacebook(
-      `Request to get post data with: ${JSON.stringify(req.query)}`
-    );
-
     const { erxesApiId } = req.query;
 
     const post = await Posts.getPost({ erxesApiId }, true);
@@ -135,10 +131,6 @@ const init = async app => {
   });
 
   app.get('/facebook/get-comments-count', async (req, res) => {
-    debugFacebook(
-      `Request to get post data with: ${JSON.stringify(req.query)}`
-    );
-
     const { postId, isResolved = false } = req.query;
 
     const post = await Posts.getPost({ erxesApiId: postId }, true);
@@ -160,10 +152,6 @@ const init = async app => {
   });
 
   app.get('/facebook/get-customer-posts', async (req, res) => {
-    debugFacebook(
-      `Request to get customer post data with: ${JSON.stringify(req.query)}`
-    );
-
     const { customerId } = req.query;
 
     const customer = await Customers.findOne({ erxesApiId: customerId });
@@ -374,10 +362,6 @@ const init = async app => {
             }
 
             await receiveMessage(activity);
-
-            debugFacebook(
-              `Successfully saved activity ${JSON.stringify(activity)}`
-            );
           })
 
           .catch(e => {
@@ -392,14 +376,8 @@ const init = async app => {
       if (entry.changes) {
         for (const event of entry.changes) {
           if (event.value.item === 'comment') {
-            debugFacebook(
-              `Received comment data ${JSON.stringify(event.value)}`
-            );
             try {
               await receiveComment(event.value, entry.id);
-              debugFacebook(
-                `Successfully saved  ${JSON.stringify(event.value)}`
-              );
               res.end('success');
             } catch (e) {
               debugFacebook(`Error processing comment: ${e.message}`);
@@ -409,13 +387,8 @@ const init = async app => {
 
           if (FACEBOOK_POST_TYPES.includes(event.value.item)) {
             try {
-              debugFacebook(
-                `Received post data ${JSON.stringify(event.value)}`
-              );
               await receivePost(event.value, entry.id);
-              debugFacebook(
-                `Successfully saved post ${JSON.stringify(event.value)}`
-              );
+
               res.end('success');
             } catch (e) {
               debugFacebook(`Error processing comment: ${e.message}`);

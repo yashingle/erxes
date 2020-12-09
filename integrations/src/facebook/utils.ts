@@ -134,7 +134,7 @@ export const getFacebookUser = async (
   try {
     const response = await graphRequest.get(`/${fbUserId}`, pageToken);
 
-    console.log(response);
+    debugFacebook(`Facebook get user response`, response);
     return response;
   } catch (e) {
     debugFacebook(`Error occurred while getting facebook user: ${e.message}`);
