@@ -3,7 +3,7 @@
   "private": true,
   "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
-    "@daily-co/daily-js": "^0.9.991",
+    "@daily-co/daily-js": "^0.9.995",
     "@nateradebaugh/react-datetime": "^4.0.0-rc.10",
     "@nivo/line": "0.35.0",
     "@nivo/pie": "0.35.0",
@@ -32,6 +32,7 @@
     "customize-cra": "^1.0.0",
     "cypress-file-upload": "^4.0.7",
     "date-fns": "1.29.0",
+    "dayjs": "^1.8.15",
     "draft-js": "^0.10.5",
     "draft-js-anchor-plugin": "^2.0.2",
     "draft-js-buttons": "^2.0.1",
@@ -40,7 +41,7 @@
     "draft-js-plugins-editor": "^2.0.3",
     "draft-js-static-toolbar-plugin": "^3.0.0",
     "erxes-icon": "^1.2.1",
-    "erxes-ui-utils": "^0.1.23",
+    "erxes-ui-utils": "0.1.23",
     "fuzzysearch-highlight": "^1.0.3",
     "graphql": "^0.12.3",
     "graphql-tag": "^2.6.1",
@@ -74,8 +75,6 @@
     "xss": "^1.0.3"
   },
   "scripts": {
-    "format": "prettier --single-quote --write 'src/**/*.@(ts|tsx)'",
-    "precommit": "lint-staged",
     "start": "react-app-rewired start",
     "build": "yarn generateVersion && react-app-rewired build",
     "generateVersion": "node commands/generateVersion.js",
