@@ -1,8 +1,13 @@
-import { BoardSelect as CommonBoarSelect } from 'erxes-ui-utils';
-import { PipelinesQueryResponse } from 'erxes-ui-utils/lib/boards/types';
-import { __ } from 'modules/common/utils';
+import { BoardSelect as CommonBoardSelect } from 'erxes-ui-utils';
+import * as compose from 'lodash.flowright';
 import React from 'react';
-import { BoardsQueryResponse, IStage, StagesQueryResponse } from '../types';
+import { withProps, __ } from '../../common/utils';
+import {
+  BoardsQueryResponse,
+  IStage,
+  PipelinesQueryResponse,
+  StagesQueryResponse
+} from '../types';
 
 type Props = {
   type: string;
@@ -22,10 +27,13 @@ type FinalProps = {
   stagesQuery: StagesQueryResponse;
 } & Props;
 
-
-class BoardSelect extends React.Component<FinalProps> {
+class BoardSelectContainer extends React.Component<FinalProps> {
   render() {
-    return <CommonBoarSelect {...this.props} translator={__}/>
+    return <CommonBoardSelect {...this.props} translator={__} />;
   }
 }
-export default BoardSelect;
+
+export default withProps<Props>(
+  compose(
+  )(BoardSelectContainer)
+);
