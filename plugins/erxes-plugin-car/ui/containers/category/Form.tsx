@@ -1,6 +1,5 @@
 import client from 'apolloClient';
 import { ButtonMutate } from 'erxes-ui-utils';
-import gql from 'graphql-tag';
 import React from 'react';
 
 import CategoryForm from '../../components/category/Form';
@@ -25,7 +24,6 @@ class CategoryFormContainer extends React.Component<Props> {
       return (
         <ButtonMutate
           client={client}
-          gql={gql}
           mutation={
             object
               ? mutations.carCategoryEdit

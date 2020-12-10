@@ -1,6 +1,5 @@
 import client from 'apolloClient';
 import { ButtonMutate as CommonButtonMutate, SmallLoader } from 'erxes-ui-utils';
-import gql from 'graphql-tag';
 import { __ } from 'modules/common/utils';
 import React from 'react';
 
@@ -35,7 +34,6 @@ class ButtonMutate extends React.Component<Props, { isLoading: boolean }> {
     return <CommonButtonMutate
       {...this.props}
       client={client}
-      gql={gql}
       translator={__}
     />
   }

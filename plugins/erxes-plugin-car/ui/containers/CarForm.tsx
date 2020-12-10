@@ -46,7 +46,6 @@ class CarFromContainer extends React.Component<FinalProps> {
       return (
         <ButtonMutate
           client={client}
-          gql={gql}
           mutation={object ? mutations.carsEdit : mutations.carsAdd}
           variables={values}
           callback={afterSave}
