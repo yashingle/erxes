@@ -2037,10 +2037,10 @@ error-ex@^1.2.0, error-ex@^1.3.1:
   dependencies:
     is-arrayish "^0.2.1"
 
-erxes-message-broker@^1.0.16:
-  version "1.0.16"
-  resolved "https://registry.yarnpkg.com/erxes-message-broker/-/erxes-message-broker-1.0.16.tgz#9a295a7751e4aedb70b317a44ea23bdc52fcafda"
-  integrity sha512-ciyRUe4j7zpzvPO87v+upEccgvpf9l4ZYMGwAwoFkdw281GdDTgXFe5tr7bqZFlFD1Bhlc7tACyJyp31mGX47w==
+erxes-message-broker@^1.0.19:
+  version "1.0.19"
+  resolved "https://registry.yarnpkg.com/erxes-message-broker/-/erxes-message-broker-1.0.19.tgz#ff10e50b50f04ef9b15de5587f287b38ae4c072a"
+  integrity sha512-/hpWnrl8X9QEImwnbpa43yDvkV4FxHyICWKM2+cIG3Cfcpkm1InmHAh57lW1I6rA2WcS3SP63KH4wYWY0oKBXg==
   dependencies:
     "@babel/runtime" "^7.11.2"
     amqplib "^0.6.0"

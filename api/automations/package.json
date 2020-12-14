@@ -33,14 +33,14 @@
     ]
   },
   "dependencies": {
-    "request-promise": "^4.2.4",
-    "dotenv": "^4.0.0",
-    "mongoose": "5.7.5",
-    "debug": "^4.1.1",
-    "body-parser": "^1.17.1",
-    "express": "^4.16.4",
     "amqplib": "^0.5.5",
-    "erxes-message-broker": "^1.0.16",
+    "body-parser": "^1.17.1",
+    "debug": "^4.1.1",
+    "dotenv": "^4.0.0",
+    "erxes-message-broker": "^1.0.19",
+    "express": "^4.16.4",
+    "mongoose": "5.7.5",
+    "request-promise": "^4.2.4",
     "uuid": "^3.3.3"
   },
   "peerOptionalDependencies": {
