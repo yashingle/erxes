@@ -215,10 +215,9 @@ export const getOrCreateCustomer = async (
       (await getFacebookUser(pageId, facebookPageTokensMap, userId)) || {};
   } catch (e) {
     facebookPageTokensMap = await refreshPageAccesToken(pageId, integration);
-
-    fbUser =
-      (await getFacebookUser(pageId, facebookPageTokensMap, userId)) || {};
   }
+
+  fbUser = (await getFacebookUser(pageId, facebookPageTokensMap, userId)) || {};
 
   const fbUserProfilePic =
     fbUser.profile_pic ||
