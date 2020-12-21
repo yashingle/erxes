@@ -63,7 +63,7 @@ const eventParams = `
   description: String,
   start: String,
   end: String,
-  
+
   participants: [Participant],
   rrule: String,
   timezone: String,
