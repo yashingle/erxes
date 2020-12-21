@@ -243,7 +243,7 @@ describe('calendarQueries', () => {
           name
           color
           accountId
-      
+
           calendars {
             _id
             providerCalendarId
