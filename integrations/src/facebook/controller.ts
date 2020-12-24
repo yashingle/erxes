@@ -353,14 +353,14 @@ const init = async app => {
                 pageId,
                 facebookPageTokensMap
               );
-            } catch (e) {
+            } catch {
               return next();
             }
 
             await receiveMessage(activity);
           })
 
-          .catch(e => {
+          .catch(() => {
             res.end('success');
           });
       }
@@ -382,7 +382,7 @@ const init = async app => {
               await receivePost(event.value, entry.id);
 
               res.end('success');
-            } catch (e) {
+            } catch {
               res.end('success');
             }
           } else {
