@@ -52,9 +52,7 @@ initNylas(app);
 
 app.use(bodyParser.raw({ limit: '10mb', verify: rawBodySaver, type: '*/*' }));
 
-app.use((req, _res, next) => {
-  debugRequest(debugIntegrations, req);
-
+app.use((_req, _res, next) => {
   next();
 });
 
