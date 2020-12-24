@@ -59,6 +59,7 @@ const init = async app => {
           }
         });
       } catch (e) {
+        debugFacebook(`error while sending request to endpoint: ${e.message}`);
         await Integrations.deleteOne({ _id: integration._id });
         return next(e);
       }
@@ -326,8 +327,6 @@ const init = async app => {
     for (const entry of data.entry) {
       // receive chat
       if (entry.messaging) {
-        debugFacebook(`Received messenger data ${JSON.stringify(data)}`);
-
         adapter
           .processActivity(req, res, async context => {
             const { activity } = await context;
