@@ -354,9 +354,6 @@ const init = async app => {
                 facebookPageTokensMap
               );
             } catch (e) {
-              debugFacebook(
-                `Error occurred while getting page access token: ${e.message}`
-              );
               return next();
             }
 
@@ -364,9 +361,6 @@ const init = async app => {
           })
 
           .catch(e => {
-            debugFacebook(
-              `Error occurred while processing activity: ${e.message}`
-            );
             res.end('success');
           });
       }
@@ -379,7 +373,6 @@ const init = async app => {
               await receiveComment(event.value, entry.id);
               res.end('success');
             } catch (e) {
-              debugFacebook(`Error processing comment: ${e.message}`);
               res.end('success');
             }
           }
@@ -390,7 +383,6 @@ const init = async app => {
 
               res.end('success');
             } catch (e) {
-              debugFacebook(`Error processing comment: ${e.message}`);
               res.end('success');
             }
           } else {

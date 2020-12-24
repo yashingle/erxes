@@ -1,5 +1,5 @@
 import * as graph from 'fbgraph';
-import { debugFacebook, debugRequest, debugResponse } from '../debuggers';
+import { debugFacebook, debugResponse } from '../debuggers';
 import Accounts from '../models/Accounts';
 import { getConfig, getEnv } from '../utils';
 import { graphRequest } from './utils';
@@ -21,8 +21,6 @@ const loginMiddleware = async (req, res) => {
     scope: FACEBOOK_PERMISSIONS,
     redirect_uri: `${DOMAIN}/fblogin`
   };
-
-  debugRequest(debugFacebook, req);
 
   // we don't have a code yet
   // so we'll redirect to the oauth dialog
