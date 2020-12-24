@@ -4,12 +4,7 @@ import * as express from 'express';
 import initCallPro from './callpro/controller';
 import initChatfuel from './chatfuel/controller';
 import { connect, mongoStatus } from './connection';
-import {
-  debugInit,
-  debugIntegrations,
-  debugRequest,
-  debugResponse
-} from './debuggers';
+import { debugInit, debugIntegrations, debugResponse } from './debuggers';
 import initFacebook from './facebook/controller';
 import initGmail from './gmail/controller';
 import { removeIntegration, updateIntegrationConfigs } from './helpers';
