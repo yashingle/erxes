@@ -207,6 +207,11 @@ function Entry({
             <span>{__('Coming soon')}</span>
           </Ribbon>
         )}
+        {integration.openSource && (
+          <Ribbon isSmall={true}>
+            <span>Open source only</span>
+          </Ribbon>
+        )}
       </Box>
       {renderCustomLink()}
       {renderCreate(createUrl, createModal)}

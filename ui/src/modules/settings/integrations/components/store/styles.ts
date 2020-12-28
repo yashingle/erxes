@@ -44,7 +44,7 @@ const Box = styledTS<{ isInMessenger: boolean }>(styled.div)`
   }
 `;
 
-const Ribbon = styled.div`
+const Ribbon = styledTS<{ isSmall?: boolean }>(styled.div)`
   overflow: hidden;
   position: absolute;
   right: -5px;
@@ -56,7 +56,7 @@ const Ribbon = styled.div`
     position: absolute;
     width: 130px;
     color: ${colors.colorWhite};
-    font-size: ${dimensions.unitSpacing}px;
+    font-size: ${props => (props.isSmall ? '7.5px' : '10px')};
     font-weight: bold;
     text-transform: uppercase;
     text-align: center;
