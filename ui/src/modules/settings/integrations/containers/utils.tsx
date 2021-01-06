@@ -70,18 +70,18 @@ export const formatObj = (emailArray: IEmail[]) => {
   return emailArray ? emailArray.map(s => s.email).join(', ') : '';
 };
 
-type Params = {
-  fromEmail: string;
-  date: string;
-  to: IEmail[];
-  cc: IEmail[];
-  bcc: IEmail[];
-  subject: string;
-  body: string;
-  emailSignature: string;
+export type GenerateMailParam = {
+  fromEmail?: string;
+  date?: string;
+  to?: IEmail[];
+  cc?: IEmail[];
+  bcc?: IEmail[];
+  subject?: string;
+  body?: string;
+  emailSignature?: string;
 };
 
-export const generateForwardMailContent = (params: Params) => {
+export const generateForwardMailContent = (params: GenerateMailParam) => {
   const {
     fromEmail,
     date,
@@ -101,10 +101,10 @@ export const generateForwardMailContent = (params: Params) => {
     <br/>
     <b>Sent</b>: ${date}
     <br/>
-    <b>To</b>: ${formatObj(to)}
+    <b>To</b>: ${formatObj(to || [])}
     <br/>
     ${
-      cc.length > 0
+      cc && cc.length > 0
         ? `
       <b>Cc</b>: ${formatObj(cc)}
       <br/>
@@ -112,7 +112,7 @@ export const generateForwardMailContent = (params: Params) => {
         : ''
     }
     ${
-      bcc.length > 0
+      bcc && bcc.length > 0
         ? `
       <b>Bcc</b>: ${formatObj(bcc)}
       <br/>
@@ -128,4 +128,29 @@ export const generateForwardMailContent = (params: Params) => {
   `;
 
   return cleanHtml(generatedContent);
+};
+
+export const generatePreviousContents = params => {
+  if (params.length === 0) {
+    return '';
+  }
+
+  let content = '';
+
+  params.map((param, index) => {
+    const space = index * 10;
+
+    content += `
+      <div style="margin-left:${space}px;border-left: 1px solid #ddd;padding-left: 1ex;">
+        <div style="border-bottom:1px dotted #ddd;margin-bottom: 8px">
+          <p>${param.date} ${param.fromEmail} wrote:</p>
+          ${param.body}
+          <br/>
+        </div>
+        <div>&#32;</div>
+      </div>
+    `;
+  });
+
+  return cleanHtml(content);
 };

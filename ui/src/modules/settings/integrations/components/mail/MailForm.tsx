@@ -9,7 +9,7 @@ import EditorCK from 'modules/common/containers/EditorCK';
 import { __, Alert, uploadHandler } from 'modules/common/utils';
 import { Meta } from 'modules/inbox/components/conversationDetail/workarea/mail/style';
 import { FileName } from 'modules/inbox/styles';
-import { IMail } from 'modules/inbox/types';
+import { IMail, IMessage } from 'modules/inbox/types';
 import { IBrand } from 'modules/settings/brands/types';
 import { IEmailSignature } from 'modules/settings/email/types';
 import { IIntegration } from 'modules/settings/integrations/types';
@@ -18,7 +18,8 @@ import { MAIL_TOOLBARS_CONFIG } from '../../constants';
 import {
   formatObj,
   formatStr,
-  generateForwardMailContent
+  generateForwardMailContent,
+  generatePreviousContents
 } from '../../containers/utils';
 
 import { IUser } from 'modules/auth/types';
@@ -53,6 +54,7 @@ type Props = {
   isForward?: boolean;
   replyAll?: boolean;
   brandId?: string;
+  mails: IMessage[];
   closeModal?: () => void;
   toggleReply?: () => void;
   emailSignatures: IEmailSignature[];
@@ -141,10 +143,35 @@ class MailForm extends React.Component<Props, State> {
   }
 
   getContent(mailData: IMail, emailSignature) {
-    const { createdAt, isForward } = this.props;
+    const { createdAt, isForward, mails } = this.props;
 
     if (!isForward) {
-      return `<p>&nbsp;</p><p>&nbsp;</p> ${emailSignature}`;
+      const previousEmails = mails
+        .map(mail => {
+          if (!mail) {
+            return;
+          }
+
+          if (!mail.mailData) {
+            return;
+          }
+
+          const prevEmailForm = mail.mailData.from || [];
+          const [{ email }] = prevEmailForm;
+
+          return {
+            fromEmail: email,
+            body: mailData.body,
+            date: dayjs(mail.createdAt).format('lll')
+          };
+        })
+        .filter(mail => mail);
+
+      return `
+        <p>&nbsp;</p><p>&nbsp;</p> ${emailSignature} 
+        ${generatePreviousContents(previousEmails)}
+        <p>&nbsp;</p><p>&nbsp;</p>
+      `;
     }
 
     const {
