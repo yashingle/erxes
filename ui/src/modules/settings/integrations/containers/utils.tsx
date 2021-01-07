@@ -130,21 +130,21 @@ export const generateForwardMailContent = (params: GenerateMailParam) => {
   return cleanHtml(generatedContent);
 };
 
-export const generatePreviousContents = params => {
-  if (params.length === 0) {
+export const generatePreviousContents = msgs => {
+  if (msgs.length === 0) {
     return '';
   }
 
   let content = '';
 
-  params.map((param, index) => {
-    const space = index * 10;
+  msgs.forEach((msg, index) => {
+    const marginSpace = index >= 7 ? 70 : index * 10;
 
     content += `
-      <div style="margin-left:${space}px;border-left: 1px solid #ddd;padding-left: 1ex;">
+      <div style="margin-left:${marginSpace}px;border-left: 1px solid #ddd;padding-left: 1ex;">
         <div style="border-bottom:1px dotted #ddd;margin-bottom: 8px">
-          <p>${param.date} ${param.fromEmail} wrote:</p>
-          ${param.body}
+          <p>${msg.date} ${msg.fromEmail} wrote:</p>
+          ${msg.body}
           <br/>
         </div>
         <div>&#32;</div>

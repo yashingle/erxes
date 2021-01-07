@@ -37,6 +37,7 @@ type Props = {
   replyAll?: boolean;
   createdAt?: Date;
   mails: IMessage[];
+  messageId: string;
   toggleReply?: (toAll?: boolean) => void;
   closeModal?: () => void;
   closeReply?: () => void;
@@ -64,7 +65,8 @@ const MailFormContainer = (props: FinalProps) => {
     emailTemplatesTotalCountQuery,
     sendMailMutation,
     currentUser,
-    mails
+    mails,
+    messageId
   } = props;
 
   if (integrationsQuery.loading) {
@@ -221,7 +223,8 @@ const MailFormContainer = (props: FinalProps) => {
     fetchMoreEmailTemplates,
     emailTemplates: emailTemplatesQuery.emailTemplates,
     emailSignatures: currentUser.emailSignatures || [],
-    mails
+    mails,
+    messageId
   };
 
   return <MailForm {...updatedProps} />;

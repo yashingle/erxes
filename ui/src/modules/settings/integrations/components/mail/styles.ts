@@ -181,6 +181,33 @@ const Subject = styledTS<{ noBorder?: boolean }>(styled.div)`
   }
 `;
 
+const ShowReplyButtonWrapper = styled.div`
+  position: absolute;
+  z-index: 100;
+  width: 35px;
+  height: 11px;
+  bottom: 70px;
+  left: 20px;
+`;
+
+const ShowReplies = styled.div`
+  background-color: #eee;
+  display: flex;
+  border-radius: 8px;
+  padding: 3px;
+  justify-content: space-evenly;
+  cursor: pointer;
+
+  span {
+    overflow: hidden;
+    height: 5px;
+    width: 5px;
+    box-sizing: border-box;
+    border-radius: 50%;
+    background-color: ${colors.colorLightGray};
+  }
+`;
+
 export {
   Attachments,
   FlexRow,
@@ -195,5 +222,7 @@ export {
   AttachmentContainer,
   SpaceBetweenRow,
   EditorFooter,
-  FileSize
+  FileSize,
+  ShowReplyButtonWrapper,
+  ShowReplies
 };

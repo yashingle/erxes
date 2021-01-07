@@ -36,6 +36,8 @@ import {
   FileSize,
   MailEditorWrapper,
   Resipients,
+  ShowReplies,
+  ShowReplyButtonWrapper,
   SpaceBetweenRow,
   ToolBar,
   Uploading
@@ -55,6 +57,7 @@ type Props = {
   replyAll?: boolean;
   brandId?: string;
   mails: IMessage[];
+  messageId: string;
   closeModal?: () => void;
   toggleReply?: () => void;
   emailSignatures: IEmailSignature[];
@@ -89,6 +92,7 @@ type State = {
   fileIds: string[];
   totalFileSize: number;
   isUploading: boolean;
+  showPrevEmails: boolean;
   emailSignature: string;
 };
 
@@ -123,6 +127,7 @@ class MailForm extends React.Component<Props, State> {
       hasSubject: !props.isReply,
 
       isLoading: false,
+      showPrevEmails: false,
 
       fromEmail: sender,
       from: fromId,
@@ -143,35 +148,10 @@ class MailForm extends React.Component<Props, State> {
   }
 
   getContent(mailData: IMail, emailSignature) {
-    const { createdAt, isForward, mails } = this.props;
+    const { createdAt, isForward } = this.props;
 
     if (!isForward) {
-      const previousEmails = mails
-        .map(mail => {
-          if (!mail) {
-            return;
-          }
-
-          if (!mail.mailData) {
-            return;
-          }
-
-          const prevEmailForm = mail.mailData.from || [];
-          const [{ email }] = prevEmailForm;
-
-          return {
-            fromEmail: email,
-            body: mailData.body,
-            date: dayjs(mail.createdAt).format('lll')
-          };
-        })
-        .filter(mail => mail);
-
-      return `
-        <p>&nbsp;</p><p>&nbsp;</p> ${emailSignature} 
-        ${generatePreviousContents(previousEmails)}
-        <p>&nbsp;</p><p>&nbsp;</p>
-      `;
+      return `<p>&nbsp;</p><p>&nbsp;</p> ${emailSignature}<p>&nbsp;</p><p>&nbsp;</p>`;
     }
 
     const {
@@ -197,6 +177,52 @@ class MailForm extends React.Component<Props, State> {
     });
   }
 
+  getReplies(messageId: string) {
+    const { mails = [] } = this.props;
+
+    let msgIndex = mails.findIndex(mail => {
+      if (!mail) {
+        return false;
+      }
+
+      return mail._id === messageId;
+    });
+
+    if (msgIndex === -1) {
+      return '';
+    }
+
+    msgIndex = msgIndex === 0 ? (msgIndex += 1) : msgIndex;
+
+    const selectedMails = mails.splice(0, msgIndex);
+
+    const previousEmails = selectedMails
+      .map(mail => {
+        if (!mail.mailData) {
+          return [];
+        }
+
+        const prevEmailForm = mail.mailData.from || [];
+        const [{ email }] = prevEmailForm;
+
+        return {
+          fromEmail: email,
+          body: mail.mailData.body,
+          date: dayjs(mail.createdAt).format('lll')
+        };
+      })
+      .filter(mail => mail);
+
+    const replyContent = generatePreviousContents(previousEmails);
+
+    const updatedContent = `
+      ${this.state.content}
+      ${replyContent || ''}
+    `;
+
+    return updatedContent;
+  }
+
   clearContent = () => {
     this.setState({
       to: '',
@@ -208,7 +234,14 @@ class MailForm extends React.Component<Props, State> {
     });
   };
 
-  onSubmit = (e, shouldResolve = false) => {
+  onShowReplies = () => {
+    this.setState({
+      content: this.getReplies(this.props.messageId),
+      showPrevEmails: true
+    });
+  };
+
+  onSubmit = (_, shouldResolve = false) => {
     const {
       isReply,
       closeModal,
@@ -216,7 +249,8 @@ class MailForm extends React.Component<Props, State> {
       integrationId,
       sendMail,
       isForward,
-      clearOnSubmit
+      clearOnSubmit,
+      messageId
     } = this.props;
 
     const mailData = this.props.mailData || ({} as IMail);
@@ -235,18 +269,14 @@ class MailForm extends React.Component<Props, State> {
       return Alert.error('This message must have at least one recipient.');
     }
 
-    const {
-      references,
-      headerId,
-      inReplyTo,
-      replyTo,
-      threadId,
-      messageId
-    } = mailData;
+    const { references, headerId, inReplyTo, replyTo, threadId } = mailData;
 
     this.setState({ isLoading: true });
 
     const subjectValue = subject || mailData.subject || '';
+
+    const updatedContent =
+      isForward || !isReply ? content : this.getReplies(messageId);
 
     const variables = {
       headerId,
@@ -256,7 +286,7 @@ class MailForm extends React.Component<Props, State> {
       threadId,
       attachments,
       kind,
-      body: content,
+      body: updatedContent,
       erxesApiId: from,
       shouldResolve,
       ...(!isForward ? { replyToMessageId: messageId } : {}),
@@ -776,9 +806,30 @@ class MailForm extends React.Component<Props, State> {
     );
   }
 
+  renderShowReplies() {
+    const { isReply, isForward } = this.props;
+
+    if (!isReply || isForward || this.state.showPrevEmails) {
+      return null;
+    }
+
+    return (
+      <ShowReplyButtonWrapper>
+        <Tip text="Show trimmed content">
+          <ShowReplies onClick={this.onShowReplies}>
+            <span />
+            <span />
+            <span />
+          </ShowReplies>
+        </Tip>
+      </ShowReplyButtonWrapper>
+    );
+  }
+
   renderBody() {
     return (
       <MailEditorWrapper>
+        {this.renderShowReplies()}
         <EditorCK
           toolbar={MAIL_TOOLBARS_CONFIG}
           removePlugins="elementspath"

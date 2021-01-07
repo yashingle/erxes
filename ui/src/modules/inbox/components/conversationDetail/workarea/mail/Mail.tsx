@@ -125,6 +125,7 @@ class Mail extends React.PureComponent<Props, State> {
           mailData={mailData}
           brandId={brandId}
           mails={mails}
+          messageId={message._id}
         />
       </BoxItem>
     );
