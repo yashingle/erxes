@@ -151,7 +151,7 @@ class MailForm extends React.Component<Props, State> {
     const { createdAt, isForward } = this.props;
 
     if (!isForward) {
-      return `<p>&nbsp;</p><p>&nbsp;</p> ${emailSignature}<p>&nbsp;</p><p>&nbsp;</p>`;
+      return `<p>&nbsp;</p><p>&nbsp;</p> ${emailSignature}<p>&nbsp;</p>`;
     }
 
     const {

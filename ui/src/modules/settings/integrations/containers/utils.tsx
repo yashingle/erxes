@@ -146,8 +146,9 @@ export const generatePreviousContents = msgs => {
           <p>${msg.date} ${msg.fromEmail} wrote:</p>
           ${msg.body}
           <br/>
+          <p>&nbsp;</p>
         </div>
-        <div>&#32;</div>
+        <p>&nbsp;</p>
       </div>
     `;
   });

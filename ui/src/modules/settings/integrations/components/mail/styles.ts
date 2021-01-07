@@ -184,14 +184,17 @@ const Subject = styledTS<{ noBorder?: boolean }>(styled.div)`
 const ShowReplyButtonWrapper = styled.div`
   position: absolute;
   z-index: 100;
-  width: 35px;
-  height: 11px;
-  bottom: 70px;
-  left: 20px;
+  width: 100%;
+  height: 50px;
+  bottom: 42px;
 `;
 
 const ShowReplies = styled.div`
   background-color: #eee;
+  margin-left: 20px;
+  margin-top: 10px;
+  width: 35px;
+  height: 11px;
   display: flex;
   border-radius: 8px;
   padding: 3px;
