@@ -256,20 +256,19 @@ export const sendReply = async (
         data
       )}`
     );
-    if (e.message.includes('Invalid OAuth')) {
-      // Update expired token for selected page
-      const newPageAccessToken = await getPageAccessToken(
-        recipientId,
-        account.token
-      );
 
-      facebookPageTokensMap[recipientId] = newPageAccessToken;
+    // Update expired token for selected page
+    const newPageAccessToken = await getPageAccessToken(
+      recipientId,
+      account.token
+    );
 
-      await Integrations.updateOne(
-        { _id: integration._id },
-        { $set: { facebookPageTokensMap } }
-      );
-    }
+    facebookPageTokensMap[recipientId] = newPageAccessToken;
+
+    await Integrations.updateOne(
+      { _id: integration._id },
+      { $set: { facebookPageTokensMap } }
+    );
 
     if (e.message.includes('does not exist')) {
       throw new Error('Comment has been deleted by the customer');
