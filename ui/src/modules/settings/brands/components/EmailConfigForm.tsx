@@ -19,7 +19,7 @@ const ContentWrapper = styled.div`
   margin-top: 20px;
 `;
 
-const BrandExtendedForm = (props: Props) => {
+const EmailConfigForm = (props: Props) => {
   const { data } = useQuery(gql(queries.brandsGetDefaultEmailConfig));
 
   const defaultTemplate = data ? data.brandsGetDefaultEmailConfig : {};
@@ -120,4 +120,4 @@ const BrandExtendedForm = (props: Props) => {
   );
 };
 
-export default BrandExtendedForm;
+export default EmailConfigForm;

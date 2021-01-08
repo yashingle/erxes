@@ -23,6 +23,7 @@ import { IConfigsMap } from '../types';
 import ActivateInstallation from './ActivateInstallation';
 import Header from './Header';
 import Sidebar from './Sidebar';
+import EmailConfigForm from 'modules/settings/brands/components/EmailConfigForm';
 
 type Props = {
   currentLanguage: string;
@@ -63,6 +64,12 @@ class GeneralSettings extends React.Component<Props, State> {
     configsMap[code] = value;
 
     this.setState({ configsMap });
+  };
+
+  onChangeEmailConfig = (emailConfig: any) => {
+    this.onChangeConfig('COMPANY_EMAIL_FROM', emailConfig.email);
+    this.onChangeConfig('COMPANY_EMAIL_TEMPLATE_TYPE', emailConfig.type);
+    this.onChangeConfig('COMPANY_EMAIL_TEMPLATE', emailConfig.template);
   };
 
   onChangeMultiCombo = (code: string, values) => {
@@ -353,7 +360,14 @@ class GeneralSettings extends React.Component<Props, State> {
             </a>
           </Info>
 
-          {this.renderItem('COMPANY_EMAIL_FROM')}
+          <EmailConfigForm
+            emailConfig={{
+              email: configsMap.COMPANY_EMAIL_FROM,
+              type: configsMap.COMPANY_EMAIL_TEMPLATE_TYPE,
+              template: configsMap.COMPANY_EMAIL_TEMPLATE
+            }}
+            setEmailConfig={this.onChangeEmailConfig}
+          />
           {this.renderItem(
             'DEFAULT_EMAIL_SERVICE',
             'Write your default email service name. Default email service is SES'

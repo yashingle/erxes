@@ -7,7 +7,7 @@ import { ModalFooter } from 'modules/common/styles/main';
 import { IButtonMutateProps, IFormProps } from 'modules/common/types';
 import React, { useState } from 'react';
 import { IBrand } from '../types';
-import BrandExtendedForm from './BrandExtendedForm';
+import EmailConfigForm from './EmailConfigForm';
 
 type Props = {
   brand?: IBrand;
@@ -67,7 +67,7 @@ const BrandForm = (props: Props) => {
     }
 
     return (
-      <BrandExtendedForm
+      <EmailConfigForm
         emailConfig={emailConfig}
         setEmailConfig={setEmailConfig}
       />
