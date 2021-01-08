@@ -13,6 +13,8 @@ import { queries } from '../graphql';
 type Props = {
   emailConfig: any;
   setEmailConfig: (emailConfig: any) => void;
+  emailText: string;
+  templateName?: string;
 };
 
 const ContentWrapper = styled.div`
@@ -20,11 +22,15 @@ const ContentWrapper = styled.div`
 `;
 
 const EmailConfigForm = (props: Props) => {
-  const { data } = useQuery(gql(queries.brandsGetDefaultEmailConfig));
+  const { data } = useQuery(gql(queries.configsGetEmailTemplate), {
+    variables: {
+      name: props.templateName
+    }
+  });
 
-  const defaultTemplate = data ? data.brandsGetDefaultEmailConfig : {};
+  const defaultTemplate = data ? data.configsGetEmailTemplate : {};
 
-  const { emailConfig, setEmailConfig } = props;
+  const { emailText, emailConfig, setEmailConfig } = props;
 
   const email = emailConfig.email || '';
   const type = emailConfig.type || 'simple';
@@ -81,9 +87,7 @@ const EmailConfigForm = (props: Props) => {
     <>
       <FormGroup>
         <ControlLabel>Email</ControlLabel>
-        <p>
-          Set an email address you wish to send your transactional emails from.
-        </p>
+        <p>{emailText}</p>
 
         <FormControl
           type="email"
