@@ -252,23 +252,32 @@ export const sendReply = async (
     return response;
   } catch (e) {
     debugFacebook(
-      `Error ocurred while trying to send post request to facebook ${e} data: ${JSON.stringify(
-        data
-      )}`
+      `Error ocurred while trying to send post request to facebook ${
+        e.message
+      } data: ${JSON.stringify(data)}`
     );
 
     // Update expired token for selected page
-    const newPageAccessToken = await getPageAccessToken(
-      recipientId,
-      account.token
-    );
 
-    facebookPageTokensMap[recipientId] = newPageAccessToken;
+    try {
+      const newPageAccessToken = await getPageAccessToken(
+        recipientId,
+        account.token
+      );
 
-    await Integrations.updateOne(
-      { _id: integration._id },
-      { $set: { facebookPageTokensMap } }
-    );
+      facebookPageTokensMap[recipientId] = newPageAccessToken;
+
+      debugFacebook(`New page acces token ${e.message}`);
+
+      await Integrations.updateOne(
+        { _id: integration._id },
+        { $set: { facebookPageTokensMap } }
+      );
+    } catch (e) {
+      debugFacebook(
+        `Error ocurred gettin token ${e.message} data: ${JSON.stringify(data)}`
+      );
+    }
 
     if (e.message.includes('does not exist')) {
       throw new Error('Comment has been deleted by the customer');
