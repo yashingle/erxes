@@ -36,6 +36,7 @@ import { graphqlPubsub } from '../../../pubsub';
 import { AUTO_BOT_MESSAGES, BOT_MESSAGE_TYPES } from '../../constants';
 import {
   registerOnboardHistory,
+  replaceEditorAttributes,
   sendEmail,
   sendMobileNotification,
   sendRequest,
@@ -57,6 +58,8 @@ interface IWidgetEmailParams {
   fromEmail: string;
   title: string;
   content: string;
+  customerId?: string;
+  formId?: string;
 }
 
 export const getMessengerData = async (integration: IIntegrationDocument) => {
@@ -127,7 +130,8 @@ const widgetMutations = {
     // find integration by brandId & formId
     const integ = await Integrations.findOne({
       brandId: brand._id,
-      formId: form._id
+      formId: form._id,
+      isActive: true
     });
 
     if (!integ) {
@@ -441,6 +445,7 @@ const widgetMutations = {
       customerId: string;
       conversationId?: string;
       message: string;
+      skillId?: string;
       attachments?: any[];
       contentType: string;
     }
@@ -450,10 +455,10 @@ const widgetMutations = {
       customerId,
       conversationId,
       message,
+      skillId,
       attachments,
       contentType
     } = args;
-
     const conversationContent = strip(message || '').substring(0, 100);
 
     // customer can write a message
@@ -507,7 +512,8 @@ const widgetMutations = {
           ? CONVERSATION_OPERATOR_STATUS.BOT
           : CONVERSATION_OPERATOR_STATUS.OPERATOR,
         status: getConversationStatus(),
-        content: conversationContent
+        content: conversationContent,
+        ...(skillId ? { skillId } : {})
       });
     }
 
@@ -708,13 +714,33 @@ const widgetMutations = {
   },
 
   async widgetsSendEmail(_root, args: IWidgetEmailParams) {
-    const { toEmails, fromEmail, title, content } = args;
+    const { toEmails, fromEmail, title, content, customerId, formId } = args;
+
+    const customer = await Customers.getCustomer(customerId || '');
+    const form = await Forms.getForm(formId || '');
+
+    let finalContent = content;
+
+    if (customer && form) {
+      const { customerFields } = await replaceEditorAttributes({
+        content
+      });
+
+      const { replacedContent } = await replaceEditorAttributes({
+        content,
+        customerFields,
+        customer,
+        user: await Users.getUser(form.createdUserId)
+      });
+
+      finalContent = replacedContent || '';
+    }
 
     await sendEmail({
       toEmails,
       fromEmail,
       title,
-      template: { data: { content } }
+      template: { data: { content: finalContent } }
     });
   },
 

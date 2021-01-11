@@ -17,6 +17,7 @@ import {
   integrationFactory,
   knowledgeBaseArticleFactory,
   messengerAppFactory,
+  skillFactor,
   userFactory
 } from '../db/factories';
 import {
@@ -267,6 +268,28 @@ describe('insertMessage()', () => {
     }
 
     expect(customer.isOnline).toBeTruthy();
+
+    const user = await userFactory({ code: '123 ' });
+    const skill = await skillFactor({ memberIds: [user._id] });
+
+    const message2 = await widgetMutations.widgetsInsertMessage(
+      {},
+      {
+        contentType: MESSAGE_TYPES.TEXT,
+        integrationId: _integration._id,
+        customerId: _customer._id,
+        message: faker.lorem.sentence(),
+        skillId: skill._id
+      }
+    );
+
+    const conversation2 = await Conversations.findById(
+      message2.conversationId
+    ).lean();
+
+    if (conversation2) {
+      expect(conversation2.userRelevance).toBe(`${user.code}SS`);
+    }
   });
 
   test('with conversationId', async () => {
@@ -970,18 +993,23 @@ describe('lead', () => {
   });
 
   test('widgetsSendEmail', async () => {
+    const customer = await customerFactory({});
+    const form = await formFactory({});
+
     const emailParams = {
       toEmails: ['test-mail@gmail.com'],
       fromEmail: 'admin@erxes.io',
       title: 'Thank you for submitting.',
-      content: 'We have received your request'
+      content: 'We have received your request',
+      customerId: customer._id,
+      formId: form._id
     };
 
     const spyEmail = jest.spyOn(widgetMutations, 'widgetsSendEmail');
 
     const mutation = `
-      mutation widgetsSendEmail($toEmails: [String], $fromEmail: String, $title: String, $content: String) {
-        widgetsSendEmail(toEmails: $toEmails, fromEmail: $fromEmail, title: $title, content: $content)
+      mutation widgetsSendEmail($toEmails: [String], $fromEmail: String, $title: String, $content: String, $formId: String, $customerId: String) {
+        widgetsSendEmail(toEmails: $toEmails, fromEmail: $fromEmail, title: $title, content: $content, formId: $formId, customerId: $customerId)
       }
     `;
 

@@ -3,6 +3,7 @@ import { Brands, Conformities, Segments, Tags } from '../../../db/models';
 import { companySchema } from '../../../db/models/definitions/companies';
 import { KIND_CHOICES } from '../../../db/models/definitions/constants';
 import { customerSchema } from '../../../db/models/definitions/customers';
+import { ISegmentDocument } from '../../../db/models/definitions/segments';
 import { debugBase } from '../../../debuggers';
 import { fetchElk } from '../../../elasticsearch';
 import { COC_LEAD_STATUS_TYPES } from '../../constants';
@@ -29,14 +30,24 @@ export const getEsTypes = (contentType: string) => {
 
 export const countBySegment = async (
   contentType: string,
-  qb
+  qb,
+  source?: string
 ): Promise<ICountBy> => {
   const counts: ICountBy = {};
 
-  // Count customers by segments
-  const segments = await Segments.find({ contentType });
+  // Count cocs by segments
+  let segments: ISegmentDocument[] = [];
 
-  // Count customers by segment
+  // show all contact related engages when engage
+  if (source === 'engages') {
+    segments = await Segments.find({
+      contentType: ['customer', 'lead', 'visitor']
+    });
+  } else {
+    segments = await Segments.find({ contentType });
+  }
+
+  // Count cocs by segment
   for (const s of segments) {
     try {
       await qb.buildAllQueries();
@@ -117,6 +128,7 @@ interface ICommonListArgs {
   segment?: string;
   tag?: string;
   ids?: string[];
+  excludeIds?: boolean;
   searchValue?: string;
   autoCompletion?: boolean;
   autoCompletionType?: string;
@@ -126,6 +138,7 @@ interface ICommonListArgs {
   conformityMainTypeId?: string;
   conformityIsRelated?: boolean;
   conformityIsSaved?: boolean;
+  source?: string;
 }
 
 export class CommonBuilder<IListArgs extends ICommonListArgs> {
@@ -149,6 +162,11 @@ export class CommonBuilder<IListArgs extends ICommonListArgs> {
     this.negativeList = [];
 
     this.resetPositiveList();
+    this.resetNegativeList();
+  }
+
+  public resetNegativeList() {
+    this.negativeList = [{ term: { status: 'deleted' } }];
   }
 
   public resetPositiveList() {
@@ -184,8 +202,21 @@ export class CommonBuilder<IListArgs extends ICommonListArgs> {
   // filter by search value
   public searchFilter(value: string): void {
     this.positiveList.push({
-      wildcard: {
-        searchText: `*${value.toLowerCase()}*`
+      bool: {
+        should: [
+          {
+            match: {
+              searchText: {
+                query: value
+              }
+            }
+          },
+          {
+            wildcard: {
+              searchText: `*${value.toLowerCase()}*`
+            }
+          }
+        ]
       }
     });
   }
@@ -201,11 +232,11 @@ export class CommonBuilder<IListArgs extends ICommonListArgs> {
 
   // filter by id
   public idsFilter(ids: string[]): void {
-    this.positiveList.push({
-      terms: {
-        _id: ids
-      }
-    });
+    if (this.params.excludeIds) {
+      this.negativeList.push({ terms: { _id: ids } });
+    } else {
+      this.positiveList.push({ terms: { _id: ids } });
+    }
   }
 
   // filter by leadStatus
@@ -265,7 +296,7 @@ export class CommonBuilder<IListArgs extends ICommonListArgs> {
    */
   public async buildAllQueries(): Promise<void> {
     this.resetPositiveList();
-    this.negativeList = [];
+    this.resetNegativeList();
 
     // filter by segment
     if (this.params.segment) {
@@ -283,7 +314,7 @@ export class CommonBuilder<IListArgs extends ICommonListArgs> {
     }
 
     // If there are ids and form params, returning ids filter only filter by ids
-    if (this.params.ids) {
+    if (this.params.ids && this.params.ids.length > 0) {
       this.idsFilter(this.params.ids.filter(id => id));
     }
 
@@ -311,7 +342,13 @@ export class CommonBuilder<IListArgs extends ICommonListArgs> {
    * Run queries
    */
   public async runQueries(action = 'search', isExport?: boolean): Promise<any> {
-    const { page = 0, perPage = 0, sortField, sortDirection } = this.params;
+    const {
+      page = 0,
+      perPage = 0,
+      sortField,
+      sortDirection,
+      searchValue
+    } = this.params;
     const paramKeys = Object.keys(this.params).join(',');
 
     const _page = Number(page || 1);
@@ -351,15 +388,17 @@ export class CommonBuilder<IListArgs extends ICommonListArgs> {
         fieldToSort = `${fieldToSort}.keyword`;
       }
 
-      queryOptions.sort = {
-        [fieldToSort]: {
-          order: sortDirection
-            ? sortDirection === -1
-              ? 'desc'
-              : 'asc'
-            : 'desc'
-        }
-      };
+      if (!searchValue) {
+        queryOptions.sort = {
+          [fieldToSort]: {
+            order: sortDirection
+              ? sortDirection === -1
+                ? 'desc'
+                : 'asc'
+              : 'desc'
+          }
+        };
+      }
     }
 
     const response = await fetchElk(action, this.contentType, queryOptions);

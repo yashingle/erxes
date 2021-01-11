@@ -36,6 +36,7 @@ import responseTemplates from './responseTemplates';
 import robot from './robot';
 import scripts from './scripts';
 import segments from './segments';
+import { skillsMutations, skillTypesMutations } from './skills';
 import tags from './tags';
 import tasks from './tasks';
 import tickets from './tickets';
@@ -83,5 +84,7 @@ export default {
   ...webhooks,
   ...calendars,
   ...dashboards,
-  ...golomtApiMutations
+  ...golomtApiMutations,
+  ...skillTypesMutations,
+  ...skillsMutations
 };

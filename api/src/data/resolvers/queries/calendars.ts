@@ -51,11 +51,16 @@ const calendarQueries = {
     _root,
     {
       groupId,
+      userId,
       ...queryParams
-    }: { groupId: string; page: number; perPage: number }
+    }: { groupId: string; userId: string; page: number; perPage: number }
   ) {
     const query: any = {};
     const { page, perPage } = queryParams;
+
+    if (userId) {
+      query.userId = userId;
+    }
 
     if (groupId) {
       query.groupId = groupId;
@@ -113,17 +118,24 @@ const calendarQueries = {
     const result: any = [];
 
     for (const account of accounts) {
-      const calendars = await dataSources.IntegrationsAPI.fetchApi(
-        '/nylas/get-calendars',
-        {
-          accountId: account.accountId
-        }
-      );
+      try {
+        const calendars =
+          (await dataSources.IntegrationsAPI.fetchApi('/nylas/get-calendars', {
+            accountId: account.accountId,
+            show: true
+          })) || [];
 
-      result.push({
-        ...account.toJSON(),
-        calendars
-      });
+        if (calendars.length !== 0) {
+          result.push({
+            ...account.toJSON(),
+            calendars
+          });
+        }
+      } catch (e) {
+        if (e.message === 'Account not found') {
+          await Calendars.deleteOne({ _id: account._id });
+        }
+      }
     }
 
     return result;

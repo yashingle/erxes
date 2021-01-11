@@ -327,8 +327,11 @@ describe('Test calendars mutations', () => {
     $start: String,
     $end: String
 
-    $participants: [Participant]
-    $memberIds: [String]
+    $participants: [Participant],
+    $rrule: String,
+    $timezone: String,
+    $location: String,
+    $busy: Boolean,
   `;
 
   const eventParams = `
@@ -340,7 +343,10 @@ describe('Test calendars mutations', () => {
     end: $end
 
     participants: $participants,
-    memberIds: $memberIds
+    rrule: $rrule,
+    timezone: $timezone,
+    location: $location,
+    busy: $busy,
   `;
 
   const eventArgs = {
@@ -418,6 +424,135 @@ describe('Test calendars mutations', () => {
       mutation,
       'deleteCalendarEvent',
       { _id: 'eventId', accountId: 'accountId' },
+      {
+        dataSources
+      }
+    );
+  });
+
+  test('Update account calendar', async () => {
+    const mutation = `
+      mutation editAccountCalendar($_id: String!, $name: String, $color: String, $show: Boolean) {
+        editAccountCalendar(_id: $_id, name: $name, color: $color, show: $show)
+      }
+    `;
+
+    const editCalendarSpy = jest.spyOn(
+      dataSources.IntegrationsAPI,
+      'editCalendar'
+    );
+
+    editCalendarSpy.mockImplementation(() => Promise.resolve());
+
+    await graphqlRequest(
+      mutation,
+      'editCalendar',
+      { _id: 'eventId', color: '#fff' },
+      {
+        dataSources
+      }
+    );
+  });
+
+  const pageParamsDef = `
+    $accountId: String!,
+    $appearance: ScheduleAppearance,
+    $calendarIds: [String],
+    $booking: ScheduleBooking
+    $event: ScheduleEvent!,
+    $timezone: String!,
+    $name: String!,
+    $slug: String!
+  `;
+
+  const pageParams = `
+    accountId: $accountId,
+    appearance: $appearance,
+    calendarIds: $calendarIds,
+    booking: $booking,
+    event: $event,
+    timezone: $timezone,
+    name: $name,
+    slug: $slug,
+  `;
+
+  const pageDoc = {
+    name: 'New schedule page',
+    slug: 'join-me',
+    accountId: 'accountId',
+    timezone: 'UlanBator',
+    event: {
+      title: 'Event title',
+      location: 'Mongolia',
+      duration: 30
+    }
+  };
+
+  test('Create schedule page', async () => {
+    const mutation = `
+      mutation createSchedulePage(${pageParamsDef}) {
+        createSchedulePage(${pageParams})
+      }
+    `;
+
+    const createPageSpy = jest.spyOn(
+      dataSources.IntegrationsAPI,
+      'createSchedulePage'
+    );
+
+    createPageSpy.mockImplementation(() => Promise.resolve());
+
+    await graphqlRequest(mutation, 'createSchedulePage', pageDoc, {
+      dataSources
+    });
+
+    createPageSpy.mockRestore();
+  });
+
+  test('Update schedule page', async () => {
+    const mutation = `
+      mutation editSchedulePage($_id: String!, ${pageParamsDef}) {
+        editSchedulePage(_id: $_id, ${pageParams})
+      }
+    `;
+
+    const updatePageSpy = jest.spyOn(
+      dataSources.IntegrationsAPI,
+      'editSchedulePage'
+    );
+
+    updatePageSpy.mockImplementation(() => Promise.resolve());
+
+    await graphqlRequest(
+      mutation,
+      'editSchedulePage',
+      { _id: 'pageId', ...pageDoc },
+      {
+        dataSources
+      }
+    );
+
+    updatePageSpy.mockRestore();
+  });
+
+  test('Delete schedule page', async () => {
+    const mutation = `
+      mutation deleteSchedulePage($pageId: String!) {
+        deleteSchedulePage(pageId: $pageId)
+      }
+    `;
+
+    const deleteCalendarSpy = jest.spyOn(
+      dataSources.IntegrationsAPI,
+      'deleteSchedulePage'
+    );
+
+    deleteCalendarSpy.mockImplementation(() => Promise.resolve());
+
+    await graphqlRequest(
+      mutation,
+      'deleteSchedulePage',
+      { pageId: 'pageId' },
       {
         dataSources
       }

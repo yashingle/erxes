@@ -101,6 +101,10 @@ export default class IntegrationsAPI extends RESTDataSource {
     return this.post('/nylas/edit-calendar-event', params);
   }
 
+  public async editCalendar(params) {
+    return this.post('/nylas/edit-calendar', params);
+  }
+
   public async deleteCalendarEvent(params) {
     return this.post('/nylas/delete-calendar-event', params);
   }
@@ -111,5 +115,17 @@ export default class IntegrationsAPI extends RESTDataSource {
 
   public async deleteCalendars(params) {
     return this.post('/nylas/remove-calendars', params);
+  }
+
+  public async createSchedulePage(params) {
+    return this.post('/nylas/create-schedule-page', params);
+  }
+
+  public async editSchedulePage(params) {
+    return this.post('/nylas/edit-schedule-page', params);
+  }
+
+  public async deleteSchedulePage(params) {
+    return this.post('/nylas/delete-page', params);
   }
 }

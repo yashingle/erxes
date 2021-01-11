@@ -71,6 +71,7 @@ export const types = `
     _id: String
     notifyCustomer: Boolean
     botEndpointUrl: String
+    skillData: JSON
     botShowInitialMessage: Boolean
     availabilityMethod: String
     isOnline: Boolean,
@@ -103,7 +104,7 @@ export const queries = `
     searchValue: String,
     channelId: String,
     brandId: String,
-    tag: String
+    tag: String,
   ): [Integration]
 
   integrationsGetUsedTypes: [integrationsGetUsedTypes]
