@@ -56,7 +56,8 @@ const connectProviderToNylas = async (uid: string, integrationId?: string) => {
     const {
       access_token,
       account_id,
-      billing_state
+      billing_state,
+      name
     } = await integrateProviderToNylas({
       email,
       kind,
@@ -71,24 +72,32 @@ const connectProviderToNylas = async (uid: string, integrationId?: string) => {
 
     await memoryStorage().removeKey(crendentialKey);
 
+    const nylasAccountId = account_id;
+    const status = 'paid';
+
+    if (billing_state === 'cancelled') {
+      await enableOrDisableAccount(nylasAccountId, true);
+    }
+
     if (integrationId) {
       await createIntegration({
         kind,
         email,
         integrationId,
         nylasToken: access_token,
-        nylasAccountId: account_id,
-        status: billing_state,
+        nylasAccountId,
+        status,
         googleAccessToken
       });
     } else {
       const newAccount = await Accounts.create({
+        name,
         kind,
         email,
         googleAccessToken,
         nylasToken: access_token,
-        nylasAccountId: account_id,
-        nylasBillingState: 'paid'
+        nylasAccountId,
+        nylasBillingState: status
       });
 
       return { account: newAccount };

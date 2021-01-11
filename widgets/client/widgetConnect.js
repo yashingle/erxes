@@ -1,4 +1,4 @@
-import "@nateradebaugh/react-datetime/dist/css/styles.css";
+import "@nateradebaugh/react-datetime/css/react-datetime.css";
 import * as React from 'react';
 import * as dayjs from 'dayjs';
 import * as localizedFormat from 'dayjs/plugin/localizedFormat';
@@ -19,9 +19,16 @@ const widgetConnect = params => {
     if (!(event.data.fromPublisher && event.data.setting)) {
       return;
     }
+
     // call connect mutation
     connectMutation(event)
-      .then(({ data }) => {
+      .then((response) => {
+        if (!response){
+          return
+        }
+
+        const { data } = response;
+
         // check connection and save connection info
         connectCallback(data);
 
