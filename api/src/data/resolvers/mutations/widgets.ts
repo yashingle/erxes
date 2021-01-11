@@ -42,7 +42,7 @@ import {
   sendRequest,
   sendToWebhook
 } from '../../utils';
-import { getOrCreateEngageMessage } from '../../widgetUtils';
+// import { getOrCreateEngageMessage } from '../../widgetUtils';
 import { conversationNotifReceivers } from './conversations';
 import { sendMsgToGolomt } from './golomtApi';
 
@@ -543,7 +543,9 @@ const widgetMutations = {
     );
 
     // mark customer as active
-    const activeCustomer = await Customers.markCustomerAsActive(conversation.customerId);
+    const activeCustomer = await Customers.markCustomerAsActive(
+      conversation.customerId
+    );
 
     if (conversation.operatorStatus === CONVERSATION_OPERATOR_STATUS.OPERATOR) {
       graphqlPubsub.publish('conversationClientMessageInserted', {
@@ -699,7 +701,8 @@ const widgetMutations = {
 
     await Customers.updateSession(customerId);
 
-    return await getOrCreateEngageMessage(customerId, browserInfo);
+    return null;
+    // return await getOrCreateEngageMessage(customerId, browserInfo);
   },
 
   widgetsSendTypingInfo(
